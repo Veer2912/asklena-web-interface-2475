@@ -1,220 +1,297 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { HeartPulse, Truck, Landmark, GraduationCap, Users, ShoppingCart, MessageSquare } from "lucide-react";
+import { 
+  HeartPulse, Truck, Landmark, GraduationCap, Users, ShoppingCart, 
+  X, CheckCircle2, BarChart3, ShieldCheck, Zap, Globe2, Mic2
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const industries = [
   {
-    name: "Healthcare",
-    agent: "Dr. Lena",
+    id: "health",
+    name: "HealthPod",
+    industry: "Healthcare",
     icon: <HeartPulse className="w-6 h-6" />,
     color: "cyan",
-    conversation: "I can help schedule your cardiac screening for next Tuesday.",
-    description: "Assisting patients with appointments and medical queries."
+    accent: "#22d3ee",
+    description: "Empathetic voice agents for patient support and medical coordination.",
+    capabilities: [
+      "Appointment Scheduling",
+      "Symptom Documentation",
+      "Insurance Verification",
+      "HIPAA Compliant Processing"
+    ],
+    stats: { efficiency: "+40%", latency: "180ms", security: "Tier 1" }
   },
   {
-    name: "Logistics",
-    agent: "Agent Alex",
+    id: "logistics",
+    name: "LogisticsPod",
+    industry: "Logistics",
     icon: <Truck className="w-6 h-6" />,
-    color: "magenta",
-    conversation: "Your shipment #4920 is currently in transit to Berlin.",
-    description: "Real-time tracking and delivery coordination."
-  },
-  {
-    name: "Finance",
-    agent: "FinLena",
-    icon: <Landmark className="w-6 h-6" />,
-    color: "purple",
-    conversation: "I've flagged the unrecognized charge and frozen your card.",
-    description: "Secure transaction handling and account support."
-  },
-  {
-    name: "Education",
-    agent: "Tutor Lena",
-    icon: <GraduationCap className="w-6 h-6" />,
     color: "blue",
-    conversation: "The student portal credentials have been sent to your email.",
-    description: "Streamlining student inquiries and registrations."
+    accent: "#3b82f6",
+    description: "Precision-focused agents for fleet management and delivery tracking.",
+    capabilities: [
+      "Real-time Tracking",
+      "Route Optimization",
+      "Dispatch Coordination",
+      "Inventory Management"
+    ],
+    stats: { efficiency: "+55%", latency: "150ms", security: "Enterprise" }
   },
   {
-    name: "HR & Recruitment",
-    agent: "Recruit Lena",
-    icon: <Users className="w-6 h-6" />,
+    id: "finance",
+    name: "FinPod",
+    industry: "Finance",
+    icon: <Landmark className="w-6 h-6" />,
     color: "indigo",
-    conversation: "Your interview with the engineering team is set for 3 PM.",
-    description: "Automated candidate screening and scheduling."
+    accent: "#6366f1",
+    description: "Secure, professional agents for transaction support and fraud alerts.",
+    capabilities: [
+      "Fraud Detection Alerts",
+      "Balance Inquiries",
+      "Loan Status Updates",
+      "Secure ID Verification"
+    ],
+    stats: { efficiency: "+30%", latency: "190ms", security: "Bank-Grade" }
   },
   {
-    name: "Ecommerce",
-    agent: "ShopLena",
+    id: "edu",
+    name: "EduPod",
+    industry: "Education",
+    icon: <GraduationCap className="w-6 h-6" />,
+    color: "purple",
+    accent: "#a855f7",
+    description: "Encouraging agents for student enrollment and academic support.",
+    capabilities: [
+      "Enrollment Guidance",
+      "FAQ Automation",
+      "Schedule Management",
+      "Event Notifications"
+    ],
+    stats: { efficiency: "+45%", latency: "200ms", security: "GDPR/FERPA" }
+  },
+  {
+    id: "hr",
+    name: "RecruitPod",
+    industry: "HR & Recruitment",
+    icon: <Users className="w-6 h-6" />,
+    color: "pink",
+    accent: "#ec4899",
+    description: "Warm, engaging agents for candidate screening and interviews.",
+    capabilities: [
+      "Pre-screening Interviews",
+      "Interview Scheduling",
+      "Onboarding Assistance",
+      "Employee Inquiries"
+    ],
+    stats: { efficiency: "+60%", latency: "170ms", security: "SOC 2" }
+  },
+  {
+    id: "shop",
+    name: "ShopPod",
+    industry: "Ecommerce",
     icon: <ShoppingCart className="w-6 h-6" />,
-    color: "teal",
-    conversation: "I've added the summer collection discount to your cart.",
-    description: "Personalized shopping and order management."
+    color: "fuchsia",
+    accent: "#d946ef",
+    description: "Helpful agents for order management and personalized sales.",
+    capabilities: [
+      "Order Status Updates",
+      "Cart Abandonment",
+      "Refund Processing",
+      "Upsell Assistance"
+    ],
+    stats: { efficiency: "+35%", latency: "160ms", security: "PCI DSS" }
   }
 ];
 
 export function VoiceAgentPods() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-
-  useEffect(() => {
-    if (isHovered) return;
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % industries.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [isHovered]);
+  const [selectedPod, setSelectedPod] = useState<typeof industries[0] | null>(null);
 
   return (
-    <section className="py-32 bg-black relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Industry Agent Pods
-          </h2>
-          <p className="text-zinc-500 text-lg max-w-2xl mx-auto">
-            Specialized voice agents trained for your specific industry needs.
+    <section className="py-32 bg-black relative overflow-hidden font-sans">
+      {/* Background Decor */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none">
+        <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-purple-500/5 blur-[150px] rounded-full" />
+        <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-blue-500/5 blur-[150px] rounded-full" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
+        <div className="text-center mb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6"
+          >
+            <Globe2 className="w-4 h-4 text-purple-400" />
+            <span className="text-xs font-bold text-purple-400 uppercase tracking-widest">Industry Architecture</span>
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-6xl font-bold text-white mb-6 uppercase tracking-tighter"
+          >
+            Agent <span className="text-zinc-500">Pods</span>
+          </motion.h2>
+          <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+            Specialized neural cores pre-configured for your industry. Deploy a dedicated voice agent pod in minutes.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {industries.map((industry, idx) => (
-            <PodCard 
-              key={industry.name} 
-              industry={industry} 
-              isActive={activeIndex === idx}
-              onHover={() => {
-                setIsHovered(true);
-                setActiveIndex(idx);
-              }}
-              onLeave={() => setIsHovered(false)}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PodCard({ industry, isActive, onHover, onLeave }: { 
-  industry: typeof industries[0], 
-  isActive: boolean,
-  onHover: () => void,
-  onLeave: () => void
-}) {
-  const colorMap: Record<string, string> = {
-    cyan: "from-cyan-500/20 to-cyan-500/5 border-cyan-500/30 text-cyan-400 shadow-cyan-500/10",
-    magenta: "from-magenta-500/20 to-magenta-500/5 border-magenta-500/30 text-magenta-400 shadow-magenta-500/10",
-    purple: "from-purple-500/20 to-purple-500/5 border-purple-500/30 text-purple-400 shadow-purple-500/10",
-    blue: "from-blue-500/20 to-blue-500/5 border-blue-500/30 text-blue-400 shadow-blue-500/10",
-    indigo: "from-indigo-500/20 to-indigo-500/5 border-indigo-500/30 text-indigo-400 shadow-indigo-500/10",
-    teal: "from-teal-500/20 to-teal-500/5 border-teal-500/30 text-teal-400 shadow-teal-500/10",
-  };
-
-  const glowColorMap: Record<string, string> = {
-    cyan: "rgba(34, 211, 238, 0.15)",
-    magenta: "rgba(217, 70, 239, 0.15)",
-    purple: "rgba(168, 85, 247, 0.15)",
-    blue: "rgba(59, 130, 246, 0.15)",
-    indigo: "rgba(99, 102, 241, 0.15)",
-    teal: "rgba(20, 184, 166, 0.15)",
-  };
-
-  return (
-    <motion.div
-      onMouseEnter={onHover}
-      onMouseLeave={onLeave}
-      layout
-      initial={false}
-      animate={{
-        scale: isActive ? 1.05 : 1,
-        y: isActive ? -10 : 0,
-      }}
-      className={`relative p-8 rounded-[2.5rem] border bg-gradient-to-br backdrop-blur-xl transition-all duration-500 cursor-pointer ${
-        isActive ? colorMap[industry.color] : "from-white/5 to-transparent border-white/5 text-zinc-400 shadow-none"
-      }`}
-      style={{
-        boxShadow: isActive ? `0 20px 40px ${glowColorMap[industry.color]}` : "none"
-      }}
-    >
-      <div className="flex items-start justify-between mb-8">
-        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-black/50 border border-white/10 ${isActive ? 'text-white' : 'text-zinc-500'}`}>
-          {industry.icon}
-        </div>
-        <div className="flex gap-1">
-          {[...Array(3)].map((_, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {industries.map((pod, idx) => (
             <motion.div
-              key={i}
-              className={`w-1 rounded-full ${isActive ? 'bg-current' : 'bg-zinc-800'}`}
-              animate={{ 
-                height: isActive ? [8, 20, 8] : 8
-              }}
-              transition={{ 
-                duration: 0.6, 
-                repeat: Infinity, 
-                delay: i * 0.1 
-              }}
-            />
+              key={pod.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              whileHover={{ y: -10 }}
+              onClick={() => setSelectedPod(pod)}
+              className="group cursor-pointer"
+            >
+              <div className="relative p-10 rounded-[3rem] bg-zinc-900/40 border border-white/5 backdrop-blur-xl transition-all duration-500 group-hover:border-white/20 h-full overflow-hidden">
+                {/* Pod Core */}
+                <div className="mb-8 relative w-20 h-20">
+                  <div className={`absolute inset-0 bg-white/5 rounded-2xl flex items-center justify-center text-white z-10 border border-white/10 group-hover:scale-110 transition-transform duration-500`}>
+                    {pod.icon}
+                  </div>
+                  {/* Pulse Effect */}
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.3, 0.1, 0.3],
+                    }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className="absolute inset-0 rounded-2xl bg-current opacity-20 blur-xl"
+                    style={{ color: pod.accent }}
+                  />
+                </div>
+
+                <h3 className="text-2xl font-bold text-white mb-2">{pod.name}</h3>
+                <p className="text-xs font-mono text-zinc-500 uppercase tracking-widest mb-6">
+                  {pod.industry} Agent
+                </p>
+                <p className="text-zinc-400 text-sm leading-relaxed mb-10">
+                  {pod.description}
+                </p>
+
+                <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-auto">
+                  <span>View Details</span>
+                  <div className="w-8 h-px bg-zinc-800 group-hover:w-12 transition-all duration-500 group-hover:bg-purple-500" />
+                </div>
+
+                {/* Corner Accent */}
+                <div 
+                  className="absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-10 transition-opacity duration-500 blur-3xl rounded-full"
+                  style={{ backgroundColor: pod.accent }}
+                />
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>
 
-      <div className="mb-6">
-        <h3 className={`text-2xl font-bold mb-1 ${isActive ? 'text-white' : 'text-zinc-300'}`}>
-          {industry.name}
-        </h3>
-        <p className="text-sm font-medium opacity-60 uppercase tracking-widest">
-          {industry.agent}
-        </p>
-      </div>
+      {/* Expanded Pod Modal */}
+      <AnimatePresence>
+        {selectedPod && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedPod(null)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            
+            <motion.div
+              layoutId={selectedPod.id}
+              className="relative w-full max-w-4xl bg-zinc-950 border border-white/10 rounded-[4rem] overflow-hidden shadow-2xl"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <button
+                onClick={() => setSelectedPod(null)}
+                className="absolute top-8 right-8 w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors z-20"
+              >
+                <X className="w-6 h-6" />
+              </button>
 
-      <AnimatePresence mode="wait">
-        {isActive ? (
-          <motion.div
-            key="active"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-4"
-          >
-            <div className="p-4 rounded-xl bg-black/40 border border-white/5 flex gap-3">
-              <MessageSquare className="w-4 h-4 flex-shrink-0 mt-1 opacity-50" />
-              <p className="text-sm text-white italic leading-relaxed">
-                "{industry.conversation}"
-              </p>
-            </div>
-            <p className="text-sm opacity-80 leading-relaxed">
-              {industry.description}
-            </p>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="inactive"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <p className="text-sm opacity-50">
-              Hover to see capabilities
-            </p>
-          </motion.div>
+              <div className="grid grid-cols-1 lg:grid-cols-2">
+                {/* Left Side: Identity */}
+                <div className="p-12 lg:p-16 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/10">
+                  <div className={`w-24 h-24 rounded-[2rem] flex items-center justify-center text-white mb-8 border border-white/10 relative overflow-hidden`}>
+                    <div className="absolute inset-0 opacity-20" style={{ backgroundColor: selectedPod.accent }} />
+                    <div className="relative z-10">{selectedPod.icon}</div>
+                  </div>
+                  
+                  <h3 className="text-4xl font-bold text-white mb-2">{selectedPod.name}</h3>
+                  <p className="text-lg font-mono text-zinc-500 uppercase tracking-widest mb-8">
+                    {selectedPod.industry} Engine
+                  </p>
+                  <p className="text-zinc-400 text-lg leading-relaxed mb-10">
+                    {selectedPod.description}
+                  </p>
+
+                  <div className="flex flex-wrap gap-3">
+                    <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/5">
+                      <span className="block text-[10px] text-zinc-500 font-bold uppercase mb-1">Efficiency</span>
+                      <span className="text-white font-mono font-bold">{selectedPod.stats.efficiency}</span>
+                    </div>
+                    <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/5">
+                      <span className="block text-[10px] text-zinc-500 font-bold uppercase mb-1">Latency</span>
+                      <span className="text-white font-mono font-bold">{selectedPod.stats.latency}</span>
+                    </div>
+                    <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/5">
+                      <span className="block text-[10px] text-zinc-500 font-bold uppercase mb-1">Security</span>
+                      <span className="text-white font-mono font-bold">{selectedPod.stats.security}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side: Capabilities */}
+                <div className="p-12 lg:p-16 bg-zinc-900/30">
+                  <div className="flex items-center gap-3 mb-10">
+                    <Zap className="w-5 h-5 text-purple-400" />
+                    <h4 className="text-xl font-bold text-white uppercase tracking-tighter">Core Capabilities</h4>
+                  </div>
+
+                  <div className="space-y-6">
+                    {selectedPod.capabilities.map((cap, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * i }}
+                        className="flex items-center gap-6 p-4 rounded-2xl bg-white/5 border border-white/5 group hover:bg-white/10 transition-all duration-300"
+                      >
+                        <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-purple-400 border border-white/10">
+                          <CheckCircle2 className="w-5 h-5" />
+                        </div>
+                        <span className="text-white font-medium">{cap}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <div className="mt-12 p-8 rounded-3xl bg-purple-500/10 border border-purple-500/20">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Mic2 className="w-4 h-4 text-purple-400" />
+                      <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Live Integration</span>
+                    </div>
+                    <p className="text-sm text-zinc-300 mb-6 leading-relaxed">
+                      Deploy this pod to your existing infrastructure in under 5 minutes with our native API connectors.
+                    </p>
+                    <Button className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl h-12">
+                      Deploy Pod Now
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
-
-      {/* Decorative Orb */}
-      <motion.div
-        animate={{
-          scale: isActive ? [1, 1.2, 1] : 1,
-          opacity: isActive ? [0.2, 0.4, 0.2] : 0,
-        }}
-        className={`absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl pointer-events-none ${
-          industry.color === 'cyan' ? 'bg-cyan-500' :
-          industry.color === 'magenta' ? 'bg-magenta-500' :
-          industry.color === 'purple' ? 'bg-purple-500' :
-          industry.color === 'blue' ? 'bg-blue-500' :
-          industry.color === 'indigo' ? 'bg-indigo-500' : 'bg-teal-500'
-        }`}
-      />
-    </motion.div>
+    </section>
   );
 }

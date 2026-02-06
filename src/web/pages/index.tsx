@@ -18,9 +18,11 @@ const IntelligenceLayers = lazy(() => import("@/components/sections/intelligence
 const VoiceSpectrum = lazy(() => import("@/components/sections/voice-spectrum").then(m => ({ default: m.VoiceSpectrum })));
 const VoiceStreamVisualizer = lazy(() => import("@/components/sections/voice-stream-visualizer").then(m => ({ default: m.VoiceStreamVisualizer })));
 const KeyFeatures = lazy(() => import("@/components/sections/key-features").then(m => ({ default: m.KeyFeatures })));
+const IndustryGrid = lazy(() => import("@/components/sections/industry-grid").then(m => ({ default: m.IndustryGrid })));
 const IntegrationShowcase = lazy(() => import("@/components/sections/integration-showcase").then(m => ({ default: m.IntegrationShowcase })));
 const UseCases = lazy(() => import("@/components/sections/use-cases").then(m => ({ default: m.UseCases })));
 const SecurityTrust = lazy(() => import("@/components/sections/security-trust").then(m => ({ default: m.SecurityTrust })));
+const VoiceAgentSandbox = lazy(() => import("@/components/sections/voice-agent-sandbox").then(m => ({ default: m.VoiceAgentSandbox })));
 const PersonalityShowcase = lazy(() => import("@/components/sections/personality-showcase").then(m => ({ default: m.PersonalityShowcase })));
 const EmotionalIntelligence = lazy(() => import("@/components/sections/emotional-intelligence").then(m => ({ default: m.EmotionalIntelligence })));
 const FinalCTA = lazy(() => import("@/components/sections/final-cta").then(m => ({ default: m.FinalCTA })));
@@ -43,9 +45,11 @@ export default function Index() {
         <VoiceSpectrum />
         <VoiceStreamVisualizer />
         <KeyFeatures />
+        <IndustryGrid />
         <UseCases />
         <IntegrationShowcase />
         <SecurityTrust />
+        <VoiceAgentSandbox />
         <PersonalityShowcase />
         <EmotionalIntelligence />
         <VoiceAgentPods />

@@ -1,179 +1,232 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Volume2, Heart, ShieldAlert, Sparkles, Briefcase } from "lucide-react";
 
-const solutions = [
-  { name: "Legacy Chatbots", x: -40, y: -40, z: 20, color: "bg-zinc-600", blur: "shadow-zinc-500/20" },
-  { name: "Traditional IVR", x: -60, y: -20, z: -40, color: "bg-zinc-700", blur: "shadow-zinc-600/20" },
-  { name: "Basic Voice AI", x: 20, y: -30, z: 30, color: "bg-blue-600", blur: "shadow-blue-500/20" },
-  { name: "ASKLENA", x: 60, y: 60, z: 60, color: "bg-cyan-400", blur: "shadow-cyan-400/50", highlighted: true },
+const emotions = [
+  {
+    id: "happy",
+    name: "Happy",
+    icon: <Heart className="w-5 h-5" />,
+    color: "#22c55e", // Green
+    glow: "rgba(34, 197, 94, 0.4)",
+    amplitude: 40,
+    frequency: 0.05,
+    description: "Warm, welcoming, and high-energy for positive interactions.",
+    sample: "I'm so glad I could help you with that today! Is there anything else I can do to make your day better?"
+  },
+  {
+    id: "serious",
+    name: "Serious",
+    icon: <Briefcase className="w-5 h-5" />,
+    color: "#3b82f6", // Blue
+    glow: "rgba(59, 130, 246, 0.4)",
+    amplitude: 15,
+    frequency: 0.02,
+    description: "Professional, steady, and direct for business-critical tasks.",
+    sample: "I have confirmed your transaction details. The protocol has been successfully executed according to your specifications."
+  },
+  {
+    id: "concerned",
+    name: "Concerned",
+    icon: <ShieldAlert className="w-5 h-5" />,
+    color: "#f59e0b", // Amber
+    glow: "rgba(245, 158, 11, 0.4)",
+    amplitude: 25,
+    frequency: 0.03,
+    description: "Empathetic, calm, and reassuring for support or sensitive issues.",
+    sample: "I understand how frustrating that must be. Let me see what I can do to resolve this for you right away."
+  },
+  {
+    id: "exciting",
+    name: "Exciting",
+    icon: <Sparkles className="w-5 h-5" />,
+    color: "#d946ef", // Fuchsia
+    glow: "rgba(217, 70, 239, 0.4)",
+    amplitude: 60,
+    frequency: 0.08,
+    description: "Dynamic, rhythmic, and persuasive for sales and marketing.",
+    sample: "You're going to love this! We have an exclusive offer just for you that's starting right now!"
+  }
 ];
 
 export function VoiceSpectrum() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
+  const [activeEmotion, setActiveEmotion] = useState(emotions[0]);
+  const [time, setTime] = useState(0);
 
-  const rotateX = useTransform(scrollYProgress, [0, 1], [20, -20]);
-  const rotateY = useTransform(scrollYProgress, [0, 1], [-30, 30]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime((prev) => prev + 0.1);
+    }, 30);
+    return () => clearInterval(interval);
+  }, []);
+
+  const generateWavePath = (amplitude: number, frequency: number, phase: number) => {
+    const points = [];
+    const width = 800;
+    const height = 200;
+    const centerY = height / 2;
+
+    for (let x = 0; x <= width; x += 10) {
+      const y = centerY + Math.sin(x * frequency + phase) * amplitude;
+      points.push(`${x},${y}`);
+    }
+
+    return `M ${points.join(" L ")}`;
+  };
 
   return (
-    <section 
-      ref={containerRef}
-      className="py-32 bg-black relative overflow-hidden min-h-screen flex flex-col items-center justify-center"
-    >
-      <div className="max-w-7xl mx-auto px-4 relative z-10 w-full">
-        <div className="text-center mb-16">
+    <section className="py-32 bg-black relative overflow-hidden font-sans">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-30">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-500/10 blur-[120px] rounded-full" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/10 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
+        <div className="text-center mb-20">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-bold text-white mb-6 uppercase"
+            className="text-4xl md:text-6xl font-bold text-white mb-6 uppercase tracking-tighter"
           >
-            The Voice Spectrum
+            Voice Spectrum
           </motion.h2>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            Mapping the intelligence landscape. See how Asklena redefines what's possible in the intersection of natural speech, complexity, and speed.
+            Lena expresses human-like emotions through nuanced vocal inflections. Select an emotion to see the vocal resonance change in real-time.
           </p>
         </div>
 
-        <div className="relative h-[600px] w-full flex items-center justify-center perspective-[2000px]">
-          <motion.div 
-            style={{ 
-              rotateX,
-              rotateY,
-              transformStyle: "preserve-3d"
-            }}
-            className="relative w-[500px] h-[500px]"
-          >
-            {/* 3D Axis System */}
-            <div className="absolute inset-0 border border-white/10" style={{ transform: "translateZ(-100px)" }} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Wave Visualizer */}
+          <div className="relative aspect-[16/9] lg:aspect-auto lg:h-[400px] flex items-center justify-center bg-zinc-900/40 rounded-[2.5rem] border border-white/5 backdrop-blur-xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-500/5 to-transparent" />
             
-            {/* X-Axis (Natural <-> Technical) */}
-            <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-zinc-800 via-white/20 to-zinc-800 flex justify-between items-center px-4">
-               <span className="text-[10px] text-zinc-500 -translate-x-full">TECHNICAL</span>
-               <span className="text-[10px] text-zinc-500 translate-x-full">NATURAL</span>
-            </div>
-
-            {/* Y-Axis (Simple <-> Complex) */}
-            <div className="absolute left-1/2 top-0 h-full w-[1px] bg-gradient-to-b from-zinc-800 via-white/20 to-zinc-800 flex flex-col justify-between items-center py-4">
-               <span className="text-[10px] text-zinc-500 -translate-y-full">COMPLEX</span>
-               <span className="text-[10px] text-zinc-500 translate-y-full">SIMPLE</span>
-            </div>
-
-            {/* Z-Axis (Fast <-> Deep) - Simulated with lines */}
-            <div 
-              className="absolute inset-0 flex items-center justify-center pointer-events-none"
-              style={{ transform: "rotateY(90deg)" }}
+            <svg 
+              viewBox="0 0 800 200" 
+              className="w-full h-full px-8"
+              preserveAspectRatio="none"
             >
-               <div className="w-full h-[1px] bg-white/5" />
+              {/* Primary Wave */}
+              <motion.path
+                d={generateWavePath(activeEmotion.amplitude, activeEmotion.frequency, time)}
+                fill="none"
+                stroke={activeEmotion.color}
+                strokeWidth="4"
+                strokeLinecap="round"
+                animate={{ stroke: activeEmotion.color }}
+                transition={{ duration: 0.5 }}
+                style={{ filter: `drop-shadow(0 0 8px ${activeEmotion.glow})` }}
+              />
+              
+              {/* Secondary Wave (lower opacity) */}
+              <motion.path
+                d={generateWavePath(activeEmotion.amplitude * 0.6, activeEmotion.frequency * 1.2, time * 1.5)}
+                fill="none"
+                stroke={activeEmotion.color}
+                strokeWidth="2"
+                strokeLinecap="round"
+                animate={{ stroke: activeEmotion.color }}
+                transition={{ duration: 0.5 }}
+                className="opacity-30"
+              />
+
+              {/* Tertiary Wave (lowest opacity) */}
+              <motion.path
+                d={generateWavePath(activeEmotion.amplitude * 0.3, activeEmotion.frequency * 0.8, time * 0.7)}
+                fill="none"
+                stroke={activeEmotion.color}
+                strokeWidth="1"
+                strokeLinecap="round"
+                animate={{ stroke: activeEmotion.color }}
+                transition={{ duration: 0.5 }}
+                className="opacity-10"
+              />
+            </svg>
+
+            {/* Scanning Line Effect */}
+            <motion.div 
+              animate={{ x: ["-100%", "100%"] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-y-0 w-20 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 pointer-events-none"
+            />
+          </div>
+
+          {/* Emotion Controls */}
+          <div className="space-y-8">
+            <div className="grid grid-cols-2 gap-4">
+              {emotions.map((emotion) => (
+                <button
+                  key={emotion.id}
+                  onClick={() => setActiveEmotion(emotion)}
+                  className={`relative p-6 rounded-3xl border transition-all duration-300 group ${
+                    activeEmotion.id === emotion.id 
+                      ? "bg-white/10 border-white/20" 
+                      : "bg-white/5 border-white/5 hover:border-white/10"
+                  }`}
+                >
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
+                    activeEmotion.id === emotion.id ? "bg-white text-black" : "bg-zinc-800 text-zinc-400 group-hover:text-white"
+                  }`}>
+                    {emotion.icon}
+                  </div>
+                  <h3 className={`text-lg font-bold transition-colors ${
+                    activeEmotion.id === emotion.id ? "text-white" : "text-zinc-500 group-hover:text-zinc-300"
+                  }`}>
+                    {emotion.name}
+                  </h3>
+                  {activeEmotion.id === emotion.id && (
+                    <motion.div 
+                      layoutId="active-indicator"
+                      className="absolute top-4 right-4 w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]"
+                    />
+                  )}
+                </button>
+              ))}
             </div>
 
-            {/* Grid planes for depth */}
-            {[...Array(5)].map((_, i) => (
-              <div 
-                key={i}
-                className="absolute inset-0 border border-white/5 pointer-events-none"
-                style={{ transform: `translateZ(${(i - 2) * 100}px)` }}
-              />
-            ))}
-
-            {/* Data Points */}
-            {solutions.map((item, idx) => (
-              <DataPoint key={idx} item={item} />
-            ))}
-          </motion.div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeEmotion.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="p-8 rounded-[2rem] bg-zinc-900/60 border border-white/5 backdrop-blur-sm"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <Volume2 className="w-5 h-5 text-purple-400" />
+                  <span className="text-xs font-bold text-purple-400 uppercase tracking-widest font-mono">Neural Simulation</span>
+                </div>
+                <h4 className="text-white text-xl font-bold mb-4">{activeEmotion.description}</h4>
+                <div className="relative p-6 rounded-2xl bg-black/40 border border-white/5 italic text-zinc-300 leading-relaxed font-serif">
+                  "{activeEmotion.sample}"
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center">
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                      className="w-1.5 h-1.5 rounded-full bg-purple-500"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Legend / Info */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 max-w-4xl mx-auto">
+        {/* Technical Specs Footer */}
+        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Natural", desc: "Human-like inflection" },
-            { label: "Complex", desc: "Multi-turn reasoning" },
-            { label: "Fast", desc: "<200ms latency" },
-            { label: "Superior", desc: "Market-leading AI" }
-          ].map((item, i) => (
-            <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <h4 className="text-white font-bold mb-1">{item.label}</h4>
-              <p className="text-zinc-500 text-xs">{item.desc}</p>
+            { label: "Sampling Rate", value: "48kHz" },
+            { label: "Bit Depth", value: "24-bit" },
+            { label: "Emotional Depth", value: "Multi-modal" },
+            { label: "Synthesis", value: "Real-time" }
+          ].map((spec, i) => (
+            <div key={i} className="px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-center">
+              <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">{spec.label}</div>
+              <div className="text-white font-mono text-sm">{spec.value}</div>
             </div>
           ))}
         </div>
       </div>
     </section>
-  );
-}
-
-function DataPoint({ item }: { item: typeof solutions[0] }) {
-  return (
-    <motion.div
-      style={{
-        left: `${50 + item.x / 2}%`,
-        top: `${50 - item.y / 2}%`,
-        transform: `translateZ(${item.z * 2}px)`,
-        transformStyle: "preserve-3d"
-      }}
-      className="absolute"
-      initial={{ opacity: 0, scale: 0 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.5 + Math.random() * 0.5 }}
-    >
-      <div className="relative group">
-        {/* Glow */}
-        <div className={`absolute -inset-4 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity ${item.color}`} />
-        
-        {/* Point */}
-        <div className={`w-4 h-4 rounded-full border border-white/20 shadow-lg ${item.color} ${item.highlighted ? 'animate-pulse ring-4 ring-cyan-400/20' : ''}`} />
-        
-        {/* Label */}
-        <div 
-          className="absolute left-6 top-1/2 -translate-y-1/2 whitespace-nowrap"
-          style={{ transform: "translateZ(20px)" }}
-        >
-          <div className={`px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md ${
-            item.highlighted 
-              ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400' 
-              : 'bg-zinc-900/50 border-white/10 text-zinc-400'
-          }`}>
-            {item.name}
-          </div>
-        </div>
-
-        {/* Connecting Line to Origin (optional but helps depth) */}
-        <div className="absolute top-1/2 left-1/2 w-px h-px bg-white/10" style={{ transform: `translateZ(${-item.z * 2}px)` }} />
-      </div>
-
-      {/* Lena Specific Effects */}
-      {item.highlighted && (
-        <>
-          <motion.div
-            animate={{
-              scale: [1, 2, 1],
-              opacity: [0.5, 0, 0.5]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute inset-0 rounded-full bg-cyan-400/20 -z-10"
-          />
-          {/* Floating particles around Lena */}
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-cyan-400 rounded-full"
-              animate={{
-                x: [0, (Math.random() - 0.5) * 100],
-                y: [0, (Math.random() - 0.5) * 100],
-                z: [0, (Math.random() - 0.5) * 100],
-                opacity: [1, 0]
-              }}
-              transition={{
-                duration: 2 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2
-              }}
-            />
-          ))}
-        </>
-      )}
-    </motion.div>
   );
 }

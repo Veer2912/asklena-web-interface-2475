@@ -17,6 +17,7 @@
     "hono": "4.11.3",
     "lucide-react": "^0.563.0",
     "mathjs": "^15.1.0",
+    "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.70.0",
