@@ -4,6 +4,7 @@ import { IndustryGrid } from "@/components/sections/industry-grid";
 import { StatsSection } from "@/components/sections/stats-section";
 import { AgentComparison } from "@/components/sections/agent-comparison";
 import { LiveDemo } from "@/components/sections/live-demo";
+import { VoiceStreamVisualizer } from "@/components/sections/voice-stream-visualizer";
 import { KeyFeatures } from "@/components/sections/key-features";
 import { IntegrationShowcase } from "@/components/sections/integration-showcase";
 import { UseCases } from "@/components/sections/use-cases";
@@ -19,6 +20,7 @@ export default function Index() {
       <StatsSection />
       <AgentComparison />
       <LiveDemo />
+      <VoiceStreamVisualizer />
       <KeyFeatures />
       <UseCases />
       <IntegrationShowcase />
