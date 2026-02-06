@@ -26,137 +26,62 @@ const Navbar = () => {
   );
 };
 
-const NeuralNetwork = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let particles: any[] = [];
-    const particleCount = 60;
-    const connectionDistance = 150;
-
-    class Particle {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      size: number;
-
-      constructor(width: number, height: number) {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
-        this.size = Math.random() * 2 + 1;
-      }
-
-      update(width: number, height: number) {
-        this.x += this.vx;
-        this.y += this.vy;
-
-        if (this.x < 0 || this.x > width) this.vx *= -1;
-        if (this.y < 0 || this.y > height) this.vy *= -1;
-      }
-
-      draw(ctx: CanvasRenderingContext2D) {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(168, 85, 247, 0.5)";
-        ctx.fill();
-      }
-    }
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      particles = Array.from({ length: particleCount }, () => new Particle(canvas.width, canvas.height));
-    };
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach((p, i) => {
-        p.update(canvas.width, canvas.height);
-        p.draw(ctx);
-
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dx = p.x - p2.x;
-          const dy = p.y - p2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < connectionDistance) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(168, 85, 247, ${0.2 * (1 - dist / connectionDistance)})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          }
-        }
-      });
-
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    resize();
-    animate();
-    window.addEventListener("resize", resize);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none opacity-40" />;
-};
-
-const MorphingText = ({ text }: { text: string }) => {
+const VoiceWave = () => {
   return (
-    <div className="flex flex-wrap justify-center gap-x-[0.2em] overflow-hidden">
-      {text.split(" ").map((word, i) => (
-        <span key={i} className="inline-block whitespace-nowrap">
-          {word.split("").map((char, j) => (
-            <motion.span
-              key={j}
-              className="inline-block"
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ 
-                y: [20, 0, -5, 0],
-                opacity: 1,
-                scaleY: [1, 1.2, 0.8, 1],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                repeatDelay: 5,
-                delay: (i * word.length + j) * 0.05,
-                ease: "easeInOut"
-              }}
-            >
-              {char}
-            </motion.span>
-          ))}
-        </span>
-      ))}
+    <div className="relative w-full max-w-2xl h-48 flex items-center justify-center my-8">
+      <svg viewBox="0 0 800 200" className="w-full h-full overflow-visible">
+        <defs>
+          <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="rgba(168, 85, 247, 0)" />
+            <stop offset="50%" stopColor="rgba(168, 85, 247, 1)" />
+            <stop offset="100%" stopColor="rgba(168, 85, 247, 0)" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        {[...Array(4)].map((_, i) => (
+          <motion.path
+            key={i}
+            fill="none"
+            stroke="url(#wave-gradient)"
+            strokeWidth={3 - i * 0.5}
+            filter="url(#glow)"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ 
+              pathLength: 1, 
+              opacity: [0.1, 0.4, 0.1],
+              d: [
+                `M 0 100 Q 100 ${50 + i * 20} 200 100 T 400 100 T 600 100 T 800 100`,
+                `M 0 100 Q 100 ${150 - i * 20} 200 100 T 400 100 T 600 100 T 800 100`,
+                `M 0 100 Q 100 ${50 + i * 20} 200 100 T 400 100 T 600 100 T 800 100`,
+              ]
+            }}
+            transition={{
+              duration: 4 + i,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </svg>
     </div>
   );
 };
 
-const FloatingShapes = () => {
+
+const Orbs = () => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({
-        x: (e.clientX / window.innerWidth - 0.5) * 40,
-        y: (e.clientY / window.innerHeight - 0.5) * 40,
+        x: (e.clientX / window.innerWidth - 0.5) * 100,
+        y: (e.clientY / window.innerHeight - 0.5) * 100,
       });
     };
     window.addEventListener("mousemove", handleMouseMove);
@@ -165,148 +90,148 @@ const FloatingShapes = () => {
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <motion.div
-        animate={{ 
-          x: mousePos.x * 0.5, 
-          y: mousePos.y * 0.5,
-          rotateZ: 45
-        }}
-        className="absolute top-1/4 left-1/4 w-32 h-32 border border-primary/30 rounded-lg backdrop-blur-sm"
-      />
-      <motion.div
-        animate={{ 
-          x: -mousePos.x * 0.8, 
-          y: -mousePos.y * 0.8,
-          rotateZ: -15
-        }}
-        className="absolute bottom-1/4 right-1/4 w-48 h-48 border border-blue-500/20 rounded-full backdrop-blur-sm"
-      />
-      <motion.div
-        animate={{ 
-          x: mousePos.x, 
-          y: -mousePos.y,
-          rotateZ: 120
-        }}
-        className="absolute top-1/3 right-1/3 w-24 h-24 border border-purple-500/30 rotate-45 backdrop-blur-sm"
-      />
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full blur-[120px] opacity-20"
+          animate={{
+            x: mousePos.x * (i + 1) * 0.15,
+            y: mousePos.y * (i + 1) * 0.15,
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            x: { duration: 0 },
+            y: { duration: 0 },
+            scale: { duration: 5 + i, repeat: Infinity, ease: "easeInOut" }
+          }}
+          style={{
+            width: `${300 + i * 100}px`,
+            height: `${300 + i * 100}px`,
+            left: `${(i * 30) % 100 - 10}%`,
+            top: `${(i * 25) % 100 - 10}%`,
+            background: i % 2 === 0 ? "rgba(168, 85, 247, 0.4)" : "rgba(59, 130, 246, 0.4)",
+          }}
+        />
+      ))}
     </div>
   );
 };
 
 const Hero = () => {
-  const [index, setIndex] = useState(0);
-  const titles = [
-    "Voice AI Agents Built for Enterprise",
-    "Human-Like Conversations at Scale",
-    "Intelligent Voice Solutions for Global Business"
-  ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % titles.length);
-    }, 8000);
-    return () => clearInterval(timer);
-  }, []);
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 overflow-hidden bg-black">
-      <NeuralNetwork />
-      <FloatingShapes />
+      <Orbs />
       
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black z-1 pointer-events-none" />
-
       <div className="container relative z-10 px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <motion.div 
-            className="inline-block px-4 py-1.5 mb-6 text-xs font-semibold tracking-wider text-cyan-400 uppercase bg-cyan-950/30 rounded-full border border-cyan-500/30 backdrop-blur-md"
-            animate={{ 
-              boxShadow: ["0 0 0px rgba(34, 211, 238, 0)", "0 0 20px rgba(34, 211, 238, 0.3)", "0 0 0px rgba(34, 211, 238, 0)"]
+        <div className="perspective-1000 mb-8">
+          <motion.h1
+            className="text-7xl md:text-9xl lg:text-[14rem] font-black tracking-[ -0.05em] text-white select-none leading-none inline-block"
+            animate={{
+              rotateY: [-5, 5, -5],
+              rotateX: [2, -2, 2],
             }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            style={{
+              textShadow: "0 0 80px rgba(168, 85, 247, 0.3)",
+              transformStyle: "preserve-3d",
+              filter: "drop-shadow(0 0 20px rgba(255,255,255,0.1))"
+            }}
           >
-            Autonomous Intelligence
+            ASKLENA
+          </motion.h1>
+        </div>
+
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="text-xl md:text-2xl text-white/40 max-w-2xl mx-auto font-light tracking-wide mb-12"
+        >
+          Voice AI Agents Built for Enterprise
+        </motion.p>
+
+        <VoiceWave />
+
+        <div className="flex flex-col items-center gap-8 mt-12">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8 }}
+            className="relative"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            <motion.div
+              className="absolute -inset-4 bg-primary/20 rounded-full blur-2xl"
+              animate={isHovered ? {
+                scale: [1, 1.5, 1],
+                opacity: [0.3, 0.6, 0.3],
+              } : { opacity: 0 }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            
+            <Button 
+              size="lg"
+              className="relative h-16 px-10 text-xl bg-white text-black hover:bg-white rounded-full transition-all duration-500 group overflow-hidden"
+            >
+              <span className="relative z-10 flex items-center gap-3 font-bold">
+                Deploy Agent
+                <LucideArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+              
+              {/* Particle Effects on Hover */}
+              <AnimatePresence>
+                {isHovered && [...Array(15)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-primary rounded-full"
+                    initial={{ x: "50%", y: "50%", opacity: 1 }}
+                    animate={{
+                      x: `${50 + (Math.random() - 0.5) * 300}%`,
+                      y: `${50 + (Math.random() - 0.5) * 300}%`,
+                      opacity: 0,
+                      scale: 0,
+                    }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      delay: Math.random() * 0.5,
+                    }}
+                  />
+                ))}
+              </AnimatePresence>
+            </Button>
           </motion.div>
           
-          <div className="h-[180px] md:h-[220px] flex items-center justify-center mb-8">
-            <AnimatePresence mode="wait">
-              <motion.h1
-                key={index}
-                initial={{ opacity: 0, filter: "blur(10px)", scale: 0.9 }}
-                animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
-                exit={{ opacity: 0, filter: "blur(10px)", scale: 1.1 }}
-                transition={{ duration: 0.8, ease: "circOut" }}
-                className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white leading-none chromatic-aberration"
-              >
-                <MorphingText text={titles[index]} />
-              </motion.h1>
-            </AnimatePresence>
-          </div>
-
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-white/50 mb-10 leading-relaxed font-light">
-            Revolutionizing enterprise communication with neural voice synthesis that's indistinguishable from reality. Deploy in minutes, scale to millions.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative group"
-            >
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
-              <Button size="lg" className="relative h-16 px-10 text-xl bg-black text-white rounded-xl border border-white/10 flex items-center gap-2 overflow-hidden hologram-effect">
-                <span className="relative z-10 flex items-center gap-2">
-                  Launch Your Agent
-                  <LucideZap className="w-5 h-5 fill-cyan-400 text-cyan-400" />
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
-              </Button>
-            </motion.div>
-            
-            <Button size="lg" variant="ghost" className="h-16 px-10 text-lg text-white/70 hover:text-white transition-all hover:bg-white/5 border border-transparent hover:border-white/10 rounded-xl">
-              System Architecture
-            </Button>
-          </div>
-        </motion.div>
-        
-        {/* Floating Stats */}
-        <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-          {[
-            { label: "Latency", value: "<150ms", icon: LucideActivity },
-            { label: "Accuracy", value: "99.9%", icon: LucideCheckCircle2 },
-            { label: "Scalability", value: "Infinite", icon: LucideLayers },
-            { label: "Languages", value: "100+", icon: LucideGlobe },
-          ].map((stat, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + idx * 0.1 }}
-              className="glass-card p-4 rounded-xl border-white/5 flex flex-col items-center gap-1"
-            >
-              <stat.icon className="w-5 h-5 text-cyan-400 mb-1" />
-              <div className="text-2xl font-bold text-white">{stat.value}</div>
-              <div className="text-[10px] uppercase tracking-widest text-white/30">{stat.label}</div>
-            </motion.div>
-          ))}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+            className="flex items-center gap-8 text-white/30 text-sm font-medium tracking-widest uppercase"
+          >
+            <span>Instant Deployment</span>
+            <div className="w-1 h-1 bg-white/20 rounded-full" />
+            <span>Enterprise Grade</span>
+            <div className="w-1 h-1 bg-white/20 rounded-full" />
+            <span>24/7 Support</span>
+          </motion.div>
         </div>
       </div>
 
-      {/* Liquid Swipe Background Effect (Simulated with Gradient) */}
-      <motion.div 
-        className="absolute inset-0 z-[-1] bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.1)_0%,transparent_50%)]"
-        animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3]
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* Grid Pattern Overlay */}
+      <div className="absolute inset-0 z-[1] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay" />
+      <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black via-transparent to-black pointer-events-none" />
     </section>
   );
 };
+
 
 const IndustryShowcase = () => {
   const industries = [
