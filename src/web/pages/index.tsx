@@ -291,7 +291,12 @@ const IndustryShowcase = () => {
                     opacity,
                     zIndex: Math.round(z + 200)
                   }}
-                  transition={{ type: "spring", stiffness: 50, damping: 20, mass: 1 }}
+                  whileHover={{
+                    scale: scale * 1.2,
+                    x: x * 1.3,
+                    z: z * 1.3,
+                  }}
+                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
                 >
                   {/* Card Inner with 3D Flip */}
                   <div className="relative w-full h-full transition-transform duration-700 preserve-3d group-hover:rotate-y-180">
@@ -452,7 +457,8 @@ const AgentComparison = () => {
 
           <div className="absolute left-[10%] md:left-[20%] top-1/2 -translate-y-1/2 z-30">
             <motion.div
-              onClick={() => setActiveNode(activeNode === "inbound" ? null : "inbound")}
+              onMouseEnter={() => setActiveNode("inbound")}
+              onMouseLeave={() => setActiveNode(null)}
               className={`relative cursor-pointer group transition-all duration-500 ${activeNode === "inbound" ? "scale-110" : "hover:scale-105"}`}
             >
               <div className={`w-24 h-24 rounded-2xl flex items-center justify-center border transition-all duration-500 ${activeNode === "inbound" ? "bg-cyan-500/20 border-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.4)]" : "bg-white/5 border-white/10 group-hover:border-cyan-400/50"}`}>
@@ -494,7 +500,8 @@ const AgentComparison = () => {
 
           <div className="absolute right-[10%] md:right-[20%] top-1/2 -translate-y-1/2 z-30">
             <motion.div
-              onClick={() => setActiveNode(activeNode === "outbound" ? null : "outbound")}
+              onMouseEnter={() => setActiveNode("outbound")}
+              onMouseLeave={() => setActiveNode(null)}
               className={`relative cursor-pointer group transition-all duration-500 ${activeNode === "outbound" ? "scale-110" : "hover:scale-105"}`}
             >
               <div className={`w-24 h-24 rounded-2xl flex items-center justify-center border transition-all duration-500 ${activeNode === "outbound" ? "bg-purple-500/20 border-purple-400 shadow-[0_0_30px_rgba(217,70,239,0.4)]" : "bg-white/5 border-white/10 group-hover:border-purple-400/50"}`}>
@@ -1413,6 +1420,79 @@ const AIConsciousness = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer className="py-20 relative overflow-hidden bg-black border-t border-white/5">
+      <div className="container px-6 mx-auto relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                <LucidePhone className="text-white w-6 h-6" />
+              </div>
+              <span className="text-2xl font-bold tracking-tighter text-white">Asklena</span>
+            </div>
+            <p className="text-white/40 text-sm leading-relaxed">
+              Pioneering the next generation of neural voice AI for the modern enterprise. Scale human intelligence with sub-millisecond precision.
+            </p>
+            <div className="flex items-center gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary/20 hover:border-primary/50 transition-all cursor-pointer">
+                  <div className="w-4 h-4 bg-white/40 rounded-sm" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold mb-6">Solutions</h4>
+            <ul className="space-y-4 text-sm text-white/40">
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Healthcare</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Finance</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Logistics</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">IT Support</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold mb-6">Company</h4>
+            <ul className="space-y-4 text-sm text-white/40">
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">About Us</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Capabilities</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Global Network</a></li>
+              <li><a href="#" className="hover:text-cyan-400 transition-colors">Contact</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold mb-6">Newsletter</h4>
+            <p className="text-white/40 text-sm mb-6">Get the latest neural updates.</p>
+            <div className="relative">
+              <input 
+                type="email" 
+                placeholder="email@enterprise.com"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
+              />
+              <button className="absolute right-2 top-2 bottom-2 px-4 bg-primary rounded-lg text-xs font-bold hover:bg-primary/80 transition-all">
+                Join
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-mono text-white/20 uppercase tracking-[0.2em]">
+          <div>© 2025 ASKLENA NEURAL SYSTEMS. ALL RIGHTS RESERVED.</div>
+          <div className="flex gap-8">
+            <a href="#" className="hover:text-white transition-colors">Privacy Protocol</a>
+            <a href="#" className="hover:text-white transition-colors">Security Standards</a>
+            <a href="#" className="hover:text-white transition-colors">Terms of Neural Service</a>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 };
 
