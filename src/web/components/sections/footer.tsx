@@ -52,21 +52,21 @@ export function Footer() {
             <div className="space-y-8">
               <h4 className="text-white font-bold text-sm uppercase tracking-widest">Solutions</h4>
               <ul className="space-y-4">
-                <FooterLink href="#">Healthcare</FooterLink>
-                <FooterLink href="#">Logistics</FooterLink>
-                <FooterLink href="#">Finance</FooterLink>
-                <FooterLink href="#">Education</FooterLink>
-                <FooterLink href="#">Ecommerce</FooterLink>
+                <FooterLink href="/solutions">Healthcare</FooterLink>
+                <FooterLink href="/solutions">Logistics</FooterLink>
+                <FooterLink href="/solutions">Finance</FooterLink>
+                <FooterLink href="/solutions">Education</FooterLink>
+                <FooterLink href="/solutions">Ecommerce</FooterLink>
               </ul>
             </div>
             <div className="space-y-8">
               <h4 className="text-white font-bold text-sm uppercase tracking-widest">Company</h4>
               <ul className="space-y-4">
-                <FooterLink href="#">Platform</FooterLink>
-                <FooterLink href="#">Pricing</FooterLink>
-                <FooterLink href="#">API Docs</FooterLink>
-                <FooterLink href="#">Security</FooterLink>
-                <FooterLink href="#">Careers</FooterLink>
+                <FooterLink href="/features">Features</FooterLink>
+                <FooterLink href="/pricing">Pricing</FooterLink>
+                <FooterLink href="https://docs.asklena.ai">API Docs</FooterLink>
+                <FooterLink href="/solutions">Industries</FooterLink>
+                <FooterLink href="/">Home</FooterLink>
               </ul>
             </div>
           </div>

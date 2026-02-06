@@ -1,285 +1,203 @@
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Mic, Zap, Brain, MessageSquare, Volume2 } from "lucide-react";
+import { Mic, Zap, Brain, MessageSquare, Volume2, ChevronRight, Activity } from "lucide-react";
 
-const layers = [
+const stages = [
   {
-    id: 1,
-    title: "Voice Recognition",
-    description: "Real-time audio processing with sub-200ms latency.",
+    id: "input",
+    title: "Voice Input",
+    description: "Capturing raw audio data with high fidelity and ultra-low latency.",
     icon: <Mic className="w-6 h-6" />,
-    color: "from-cyan-500 to-cyan-400",
-    glow: "shadow-[0_0_50px_-12px_rgba(6,182,212,0.5)]",
-    content: "Waveform"
+    color: "from-cyan-500 to-blue-500",
+    glow: "rgba(6, 182, 212, 0.4)",
   },
   {
-    id: 2,
+    id: "recognition",
+    title: "Recognition",
+    description: "Converting audio to text using advanced neural speech models.",
+    icon: <Activity className="w-6 h-6" />,
+    color: "from-blue-500 to-indigo-500",
+    glow: "rgba(59, 130, 246, 0.4)",
+  },
+  {
+    id: "analysis",
     title: "Intent Analysis",
-    description: "Deep learning models identifying customer needs accurately.",
+    description: "Mapping phrases to specific intents and extracting key data points.",
     icon: <Zap className="w-6 h-6" />,
-    color: "from-blue-500 to-cyan-500",
-    glow: "shadow-[0_0_60px_-12px_rgba(59,130,246,0.5)]",
-    content: "Connections"
+    color: "from-indigo-500 to-purple-500",
+    glow: "rgba(99, 102, 241, 0.4)",
   },
   {
-    id: 3,
-    title: "Context Awareness",
-    description: "Maintaining conversation state and memory across turns.",
+    id: "context",
+    title: "Context & Memory",
+    description: "Referencing past interactions to provide personalized, relevant responses.",
     icon: <Brain className="w-6 h-6" />,
-    color: "from-indigo-500 to-blue-500",
-    glow: "shadow-[0_0_70px_-12px_rgba(99,102,241,0.5)]",
-    content: "DataStreams"
+    color: "from-purple-500 to-magenta-500",
+    glow: "rgba(168, 85, 247, 0.4)",
   },
   {
-    id: 4,
-    title: "Response Generation",
-    description: "Synthesizing human-like responses with personality.",
+    id: "generation",
+    title: "Response Gen",
+    description: "Synthesizing logical, helpful, and brand-consistent responses.",
     icon: <MessageSquare className="w-6 h-6" />,
-    color: "from-purple-500 to-indigo-500",
-    glow: "shadow-[0_0_80px_-12px_rgba(168,85,247,0.5)]",
-    content: "TextForming"
+    color: "from-magenta-500 to-pink-500",
+    glow: "rgba(236, 72, 153, 0.4)",
   },
   {
-    id: 5,
-    title: "Human Delivery",
-    description: "Ultra-realistic voice synthesis with emotional range.",
+    id: "output",
+    title: "Voice Output",
+    description: "Realistic TTS delivery with human-like prosody and emotion.",
     icon: <Volume2 className="w-6 h-6" />,
-    color: "from-pink-500 to-purple-500",
-    glow: "shadow-[0_0_90px_-12px_rgba(236,72,153,0.5)]",
-    content: "VoiceOutput"
+    color: "from-pink-500 to-rose-500",
+    glow: "rgba(244, 114, 182, 0.4)",
   }
 ];
 
 export function IntelligenceLayers() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
+  const isInView = useInView(containerRef, { once: false, amount: 0.2 });
 
   return (
     <section 
       ref={containerRef}
-      className="py-32 bg-black relative overflow-hidden min-h-[150vh]"
+      className="py-32 bg-black relative overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 relative z-10 h-full flex flex-col items-center">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(20,20,50,1),transparent)]" />
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-24"
-        >
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 uppercase tracking-tighter">
-            Lena's Intelligence Layers
-          </h2>
-          <p className="text-zinc-400 text-lg max-w-2xl mx-auto font-light">
-            Peel back the layers of the most advanced AI voice engine ever built. 
-            See how Lena understands, thinks, and speaks in real-time.
-          </p>
-        </motion.div>
-
-        <div className="relative w-full max-w-4xl aspect-square flex items-center justify-center">
-          {layers.map((layer, index) => (
-            <LayerCircle 
-              key={layer.id} 
-              layer={layer} 
-              index={index} 
-              total={layers.length}
-              containerScroll={scrollYProgress}
-            />
-          ))}
-        </div>
+          animate={{
+            background: [
+              "radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 50%)",
+              "radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%)",
+              "radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 50%)",
+            ]
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0"
+        />
       </div>
 
-      {/* Background elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1),transparent_70%)]" />
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="text-center mb-24">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight"
+          >
+            Intelligence <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">In Motion</span>
+          </motion.h2 >
+          <p className="text-zinc-400 text-lg max-w-2xl mx-auto font-light">
+            Watch how Lena processes every word through a sophisticated neural pipeline, 
+            delivering human-like responses in milliseconds.
+          </p>
+        </div>
+
+        {/* Desktop Pipeline Flow */}
+        <div className="hidden lg:block relative">
+          {/* Connector Line */}
+          <div className="absolute top-12 left-0 w-full h-[2px] bg-white/10 overflow-hidden">
+            <motion.div 
+              animate={isInView ? { x: ["-100%", "100%"] } : {}}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              className="w-1/3 h-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent"
+            />
+          </div>
+
+          <div className="grid grid-cols-6 gap-4 relative">
+            {stages.map((stage, index) => (
+              <StageNode key={stage.id} stage={stage} index={index} />
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile Pipeline Flow */}
+        <div className="lg:hidden flex flex-col gap-12 relative px-4">
+          {/* Vertical line */}
+          <div className="absolute left-[39px] top-0 bottom-0 w-[2px] bg-white/10" />
+          
+          {stages.map((stage, index) => (
+            <motion.div 
+              key={stage.id}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="flex gap-6 relative"
+            >
+              <div className={`flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br ${stage.color} flex items-center justify-center shadow-lg relative z-10`}>
+                {stage.icon}
+              </div>
+              <div className="pt-1">
+                <h3 className="text-white font-bold text-xl mb-2">{stage.title}</h3>
+                <p className="text-zinc-400 text-sm leading-relaxed">{stage.description}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function LayerCircle({ layer, index, total, containerScroll }: { 
-  layer: typeof layers[0], 
-  index: number, 
-  total: number,
-  containerScroll: any
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 0.5 });
-  
-  // Calculate size based on index (expanding outwards)
-  const size = 120 + (index * 140); // base size + expansion
-  const opacity = useTransform(
-    containerScroll,
-    [index / total, (index + 0.5) / total, (index + 1) / total],
-    [0.2, 1, 0.2]
-  );
-  
-  const scale = useTransform(
-    containerScroll,
-    [index / total, (index + 0.5) / total],
-    [0.9, 1]
-  );
+function StageNode({ stage, index }: { stage: typeof stages[0], index: number }) {
+  const nodeRef = useRef(null);
+  const isInView = useInView(nodeRef, { once: false, amount: 0.5 });
 
   return (
-    <motion.div
-      ref={ref}
-      style={{ 
-        width: size, 
-        height: size,
-        opacity,
-        scale,
-      }}
-      className={`absolute rounded-full border border-white/5 flex items-center justify-center transition-all duration-700 ${isInView ? layer.glow : ''} backdrop-blur-[2px]`}
-    >
-      {/* Label for the layer */}
-      <div className="absolute -top-16 left-1/2 -translate-x-1/2 text-center pointer-events-none">
-        <motion.div
-          animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20, scale: 0.9 }}
-          className="flex flex-col items-center"
+    <div ref={nodeRef} className="flex flex-col items-center group">
+      {/* Node Circle */}
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        transition={{ delay: index * 0.15, type: "spring", stiffness: 100 }}
+        className="relative z-10"
+      >
+        <div 
+          className={`w-24 h-24 rounded-[2rem] bg-gradient-to-br ${stage.color} p-[1px] shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-6`}
+          style={{ boxShadow: isInView ? `0 0 40px -5px ${stage.glow}` : 'none' }}
         >
-          <div className={`p-3 rounded-2xl bg-gradient-to-br ${layer.color} mb-3 shadow-lg`}>
-            {layer.icon}
+          <div className="w-full h-full bg-black/40 backdrop-blur-xl rounded-[1.95rem] flex items-center justify-center text-white">
+            {stage.icon}
           </div>
-          <span className="text-white font-bold text-lg whitespace-nowrap tracking-tight">{layer.title}</span>
-          <span className="text-zinc-500 text-sm max-w-[180px] leading-tight mt-1">{layer.description}</span>
-        </motion.div>
-      </div>
+        </div>
 
-      {/* Visual content for the layer */}
-      <div className="scale-125">
-        {layer.content === "Waveform" && <WaveformAnimation active={isInView} />}
-        {layer.content === "Connections" && <ConnectionsAnimation active={isInView} />}
-        {layer.content === "DataStreams" && <DataStreamsAnimation active={isInView} />}
-        {layer.content === "TextForming" && <TextFormingAnimation active={isInView} />}
-        {layer.content === "VoiceOutput" && <VoiceOutputAnimation active={isInView} />}
-      </div>
-    </motion.div>
-  );
-}
+        {/* Connecting Arrow (except for last one) */}
+        {index < stages.length - 1 && (
+          <div className="absolute top-1/2 -right-4 translate-x-1/2 -translate-y-1/2 z-20">
+            <motion.div
+              animate={{ x: [0, 10, 0], opacity: [0.3, 1, 0.3] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
+            >
+              <ChevronRight className="w-6 h-6 text-white/20" />
+            </motion.div>
+          </div>
+        )}
 
-function WaveformAnimation({ active }: { active: boolean }) {
-  return (
-    <div className="flex items-center gap-1.5 h-10">
-      {[...Array(8)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={active ? {
-            height: [10, 40, 15, 30, 10],
-          } : { height: 10 }}
-          transition={{
-            duration: 1.2,
-            repeat: Infinity,
-            delay: i * 0.1,
-            ease: "easeInOut"
-          }}
-          className="w-1.5 bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.5)]"
-        />
-      ))}
-    </div>
-  );
-}
+        {/* Pulse effect */}
+        {isInView && (
+          <motion.div
+            initial={{ scale: 1, opacity: 0.5 }}
+            animate={{ scale: 1.5, opacity: 0 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+            className={`absolute inset-0 rounded-[2rem] border border-white/20`}
+          />
+        )}
+      </motion.div>
 
-function ConnectionsAnimation({ active }: { active: boolean }) {
-  return (
-    <div className="relative w-24 h-24">
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute inset-0 border border-blue-400/20 rounded-full"
-          animate={active ? {
-            scale: [1, 1.6],
-            opacity: [0.6, 0],
-            borderWidth: ["1px", "3px", "1px"]
-          } : {}}
-          transition={{
-            duration: 2.5,
-            repeat: Infinity,
-            delay: i * 0.4,
-            ease: "easeOut"
-          }}
-        />
-      ))}
-      <div className="absolute inset-0 flex items-center justify-center">
-         <Zap className="text-blue-400 w-8 h-8 fill-blue-400/20 animate-pulse" />
-      </div>
-    </div>
-  );
-}
-
-function DataStreamsAnimation({ active }: { active: boolean }) {
-  return (
-    <div className="relative w-full h-full overflow-hidden rounded-full">
-      {[...Array(15)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute h-[1px] bg-gradient-to-r from-transparent via-indigo-400 to-transparent"
-          style={{
-            top: `${5 + i * 6}%`,
-            left: "-100%",
-            width: "100%",
-            transform: `rotate(${i * 24}deg)`
-          }}
-          animate={active ? {
-            left: ["100%", "-100%"]
-          } : {}}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            delay: i * 0.2,
-            ease: "linear"
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function TextFormingAnimation({ active }: { active: boolean }) {
-  const characters = "SYNTHESIZING_RESPONSE_BRAIN_MATRIX_0101".split("");
-  return (
-    <div className="flex flex-wrap justify-center max-w-[120px] gap-1.5">
-      {characters.map((char, i) => (
-        <motion.span
-          key={i}
-          animate={active ? {
-            opacity: [0.1, 1, 0.4, 1],
-            color: ["#a855f7", "#ffffff", "#a855f7"]
-          } : { opacity: 0.1 }}
-          transition={{
-            duration: 1.8,
-            repeat: Infinity,
-            delay: i * 0.04
-          }}
-          className="text-[11px] font-mono text-purple-400 font-bold"
-        >
-          {char}
-        </motion.span>
-      ))}
-    </div>
-  );
-}
-
-function VoiceOutputAnimation({ active }: { active: boolean }) {
-  return (
-    <div className="relative flex items-center justify-center">
-      {[...Array(3)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={active ? {
-            scale: [1, 2.5],
-            opacity: [0.6, 0]
-          } : {}}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            delay: i * 0.6,
-            ease: "easeOut"
-          }}
-          className="absolute w-16 h-16 bg-pink-500/10 rounded-full border border-pink-500/30"
-        />
-      ))}
-      <Volume2 className="text-pink-400 w-10 h-10 drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]" />
+      {/* Info */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.15 + 0.2 }}
+        className="mt-12 text-center"
+      >
+        <h3 className="text-white font-bold text-lg mb-3 tracking-tight group-hover:text-cyan-400 transition-colors">
+          {stage.title}
+        </h3>
+        <p className="text-zinc-500 text-xs md:text-sm leading-relaxed max-w-[160px] mx-auto font-light group-hover:text-zinc-300 transition-colors">
+          {stage.description}
+        </p>
+      </motion.div>
     </div>
   );
 }
