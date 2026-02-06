@@ -10,7 +10,8 @@ import {
   ShoppingBag,
   CheckCircle2,
   TrendingUp,
-  BarChart3
+  BarChart3,
+  ArrowRight
 } from "lucide-react";
 import { useState } from "react";
 
@@ -18,8 +19,9 @@ const solutions = [
   {
     id: "healthcare",
     title: "Healthcare",
-    icon: <HeartPulse className="w-10 h-10" />,
-    color: "cyan",
+    icon: <HeartPulse className="w-12 h-12" />,
+    color: "from-cyan-400 to-blue-600",
+    bgGradient: "from-cyan-500/10 to-blue-500/5",
     accent: "#06b6d4",
     description: "Scale patient support with AI agents that handle bookings and inquiries with empathy.",
     useCases: [
@@ -29,13 +31,15 @@ const solutions = [
       "Patient Follow-ups"
     ],
     result: "45% fewer no-shows",
-    roi: "3 month ROI"
+    roi: "3 month ROI",
+    impact: "10K+ patients supported"
   },
   {
     id: "logistics",
     title: "Logistics",
-    icon: <Truck className="w-10 h-10" />,
-    color: "blue",
+    icon: <Truck className="w-12 h-12" />,
+    color: "from-blue-400 to-indigo-600",
+    bgGradient: "from-blue-500/10 to-indigo-500/5",
     accent: "#3b82f6",
     description: "Automate shipment tracking and delivery coordination at any scale.",
     useCases: [
@@ -45,13 +49,15 @@ const solutions = [
       "Inventory Status"
     ],
     result: "80% faster updates",
-    roi: "60% cost reduction"
+    roi: "60% cost reduction",
+    impact: "2M+ deliveries tracked"
   },
   {
     id: "finance",
     title: "Finance",
-    icon: <Wallet className="w-10 h-10" />,
-    color: "purple",
+    icon: <Wallet className="w-12 h-12" />,
+    color: "from-purple-400 to-violet-600",
+    bgGradient: "from-purple-500/10 to-violet-500/5",
     accent: "#a855f7",
     description: "Secure, compliant voice agents for payments and account support.",
     useCases: [
@@ -61,13 +67,15 @@ const solutions = [
       "Loan Status"
     ],
     result: "99.9% Accuracy",
-    roi: "2.5x Collection rate"
+    roi: "2.5x Collection rate",
+    impact: "$500M+ in payments"
   },
   {
     id: "education",
     title: "Education",
-    icon: <GraduationCap className="w-10 h-10" />,
-    color: "emerald",
+    icon: <GraduationCap className="w-12 h-12" />,
+    color: "from-emerald-400 to-teal-600",
+    bgGradient: "from-emerald-500/10 to-teal-500/5",
     accent: "#10b981",
     description: "Support students and faculty with instant administrative assistance.",
     useCases: [
@@ -77,171 +85,322 @@ const solutions = [
       "Campus Information"
     ],
     result: "92% Student CSAT",
-    roi: "50% fewer tickets"
+    roi: "50% fewer tickets",
+    impact: "250K+ students served"
   },
   {
     id: "hr",
-    title: "HR & Recruitment",
-    icon: <Users2 className="w-10 h-10" />,
-    color: "rose",
-    accent: "#f43f5e",
-    description: "Accelerate hiring with automated screening and interview scheduling.",
+    title: "HR & Benefits",
+    icon: <Users2 className="w-12 h-12" />,
+    color: "from-pink-400 to-rose-600",
+    bgGradient: "from-pink-500/10 to-rose-500/5",
+    accent: "#ec4899",
+    description: "Streamline HR operations with intelligent agent support.",
     useCases: [
-      "Candidate Screening",
-      "Interview Scheduling",
-      "Onboarding FAQ",
-      "Benefits Support"
+      "Benefits Enrollment",
+      "PTO Requests",
+      "Payroll Questions",
+      "Policy Inquiries"
     ],
-    result: "70% faster hiring",
-    roi: "20hrs/week saved"
+    result: "70% faster resolution",
+    roi: "40% fewer HR tickets",
+    impact: "50K+ employees supported"
   },
   {
     id: "ecommerce",
-    title: "Ecommerce",
-    icon: <ShoppingBag className="w-10 h-10" />,
-    color: "amber",
-    accent: "#f59e0b",
-    description: "Drive sales and handle order support across all timezones.",
+    title: "E-Commerce",
+    icon: <ShoppingBag className="w-12 h-12" />,
+    color: "from-orange-400 to-red-600",
+    bgGradient: "from-orange-500/10 to-red-500/5",
+    accent: "#f97316",
+    description: "Boost sales and reduce support burden with conversational AI.",
     useCases: [
-      "Order Status Support",
-      "Product Recommendations",
-      "Returns Processing",
-      "Loyalty Program"
+      "Order Tracking",
+      "Return Support",
+      "Product Inquiries",
+      "Payment Assistance"
     ],
-    result: "25% more upsells",
-    roi: "15% higher LTV"
+    result: "35% increase in CSAT",
+    roi: "3x ROI within 6 months",
+    impact: "100K+ orders/month"
   }
 ];
 
+// Premium solution card component
+function SolutionCard({ 
+  solution, 
+  isSelected, 
+  onClick 
+}: { 
+  solution: typeof solutions[0]; 
+  isSelected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <motion.button
+      onClick={onClick}
+      className="relative group w-full"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 300, damping: 10 }}
+    >
+      <div className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-500 ${
+        isSelected 
+          ? `border-white/40 bg-gradient-to-br ${solution.bgGradient}` 
+          : "border-white/10 bg-white/[0.02] hover:border-white/20"
+      } p-8`}>
+        
+        {/* Animated background accent */}
+        <motion.div
+          className={`absolute inset-0 bg-gradient-to-br ${solution.color}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isSelected ? 0.05 : 0 }}
+          transition={{ duration: 0.3 }}
+        />
+
+        {/* Icon with hover effect */}
+        <div className={`relative z-10 mb-4 w-16 h-16 rounded-2xl flex items-center justify-center text-white transition-all duration-300 ${
+          isSelected 
+            ? `bg-gradient-to-br ${solution.color} shadow-[0_8px_32px_rgba(6,182,212,0.3)]`
+            : "bg-white/10 group-hover:bg-white/20"
+        }`}>
+          {solution.icon}
+        </div>
+
+        {/* Content */}
+        <h3 className="relative z-10 text-2xl font-bold mb-2 text-left group-hover:text-cyan-400 transition-colors">
+          {solution.title}
+        </h3>
+        <p className="relative z-10 text-zinc-400 text-sm text-left line-clamp-2">
+          {solution.description}
+        </p>
+
+        {/* Arrow indicator */}
+        <motion.div
+          className="relative z-10 mt-4 flex justify-between items-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isSelected ? 1 : 0.5 }}
+          transition={{ duration: 0.3 }}
+        >
+          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">
+            {solution.impact}
+          </span>
+          <motion.div
+            animate={{ x: isSelected ? 4 : 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          >
+            <ArrowRight className="w-4 h-4 text-cyan-400" />
+          </motion.div>
+        </motion.div>
+      </div>
+    </motion.button>
+  );
+}
+
+// Metrics display component
+function MetricsDisplay({ solution }: { solution: typeof solutions[0] }) {
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      {[
+        { label: "Key Result", value: solution.result },
+        { label: "ROI", value: solution.roi },
+        { label: "Scale", value: solution.impact }
+      ].map((metric, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: i * 0.1 }}
+          className="p-4 rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10"
+        >
+          <p className="text-xs font-semibold text-zinc-500 uppercase mb-1">{metric.label}</p>
+          <p className="text-lg font-bold text-cyan-400">{metric.value}</p>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export default function SolutionsPage() {
-  const [activeTab, setActiveTab] = useState(solutions[0].id);
-  const activeSolution = solutions.find(s => s.id === activeTab)!;
+  const [selectedSolution, setSelectedSolution] = useState(solutions[0]);
 
   return (
     <main className="min-h-screen bg-[#0a0e27] text-white selection:bg-cyan-500/30 overflow-x-hidden">
       <Navbar />
-      
-      {/* Hero Section */}
-      <section className="relative pt-40 pb-12 px-6">
-        <div className="max-w-7xl mx-auto text-center">
+
+      {/* Premium Hero Section */}
+      <section className="relative pt-40 pb-24 px-6 overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            className="absolute top-1/4 right-0 w-96 h-96 rounded-full bg-cyan-500/15 blur-[120px]"
+            animate={{ y: [0, 30, 0], opacity: [0.5, 0.8, 0.5] }}
+            transition={{ duration: 8, repeat: Infinity }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 left-0 w-96 h-96 rounded-full bg-purple-500/15 blur-[120px]"
+            animate={{ y: [0, -30, 0], opacity: [0.5, 0.7, 0.5] }}
+            transition={{ duration: 10, repeat: Infinity, delay: 1 }}
+          />
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            className="text-center mb-12"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
-              Enterprise <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">Solutions</span> for Every Industry
+            <span className="inline-block px-4 py-2 rounded-full bg-cyan-500/20 border border-cyan-500/50 text-sm font-semibold text-cyan-400 mb-6">
+              ✨ INDUSTRY SOLUTIONS
+            </span>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight leading-[1.2]">
+              Lena Powers Every{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+                Industry
+              </span>
             </h1>
-            <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              Lena is specialized for each vertical with custom knowledge bases and industry-specific training.
+            <p className="text-lg md:text-xl text-zinc-400 max-w-4xl mx-auto">
+              From healthcare to e-commerce, Lena delivers proven results across 6 major industries.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Tabs Section */}
-      <section className="py-12 px-6">
+      {/* Solutions Grid & Details */}
+      <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-wrap justify-center gap-3 mb-16">
-            {solutions.map((solution) => (
-              <button
-                key={solution.id}
-                onClick={() => setActiveTab(solution.id)}
-                className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold transition-all duration-300 border ${
-                  activeTab === solution.id 
-                  ? "bg-white/10 border-white/20 text-white shadow-lg" 
-                  : "bg-transparent border-white/5 text-zinc-500 hover:text-zinc-300 hover:border-white/10"
-                }`}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Solutions List */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="lg:col-span-1 space-y-4"
+            >
+              {solutions.map((solution, index) => (
+                <motion.div
+                  key={solution.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <SolutionCard
+                    solution={solution}
+                    isSelected={selectedSolution.id === solution.id}
+                    onClick={() => setSelectedSolution(solution)}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Details Panel */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="lg:col-span-2"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedSolution.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-8"
+                >
+                  {/* Header */}
+                  <div>
+                    <div className={`inline-flex items-center gap-4 mb-6 p-4 rounded-2xl bg-gradient-to-br ${selectedSolution.bgGradient} border border-white/10`}>
+                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${selectedSolution.color} flex items-center justify-center text-white`}>
+                        {selectedSolution.icon}
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-bold">{selectedSolution.title}</h2>
+                        <p className="text-zinc-400 text-sm">{selectedSolution.description}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Metrics */}
+                  <MetricsDisplay solution={selectedSolution} />
+
+                  {/* Use Cases */}
+                  <div>
+                    <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+                      <span className={`w-1 h-6 rounded-full bg-gradient-to-b ${selectedSolution.color}`} />
+                      Key Use Cases
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {selectedSolution.useCases.map((useCase, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.1 }}
+                          className="flex items-start gap-3 p-4 rounded-lg bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all"
+                        >
+                          <CheckCircle2 className={`w-5 h-5 text-transparent bg-clip-text bg-gradient-to-r ${selectedSolution.color} flex-shrink-0 mt-0.5`} />
+                          <span className="text-sm font-medium text-zinc-300">{useCase}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`w-full py-4 rounded-xl font-bold text-lg bg-gradient-to-r ${selectedSolution.color} text-white shadow-[0_8px_32px_rgba(6,182,212,0.2)] hover:shadow-[0_12px_48px_rgba(6,182,212,0.4)] transition-all flex items-center justify-center gap-2`}
+                  >
+                    Schedule Demo
+                    <ArrowRight className="w-5 h-5" />
+                  </motion.button>
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-24 px-6 border-t border-white/10">
+        <div className="max-w-6xl mx-auto">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-bold text-center mb-16"
+          >
+            Trusted by <span className="text-cyan-400">Enterprise Leaders</span>
+          </motion.h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { label: "Active Deployments", value: "147+" },
+              { label: "Conversations/Year", value: "10M+" },
+              { label: "Industries Served", value: "6" }
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="text-center p-8 rounded-2xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/10 hover:border-white/20 transition-all"
               >
-                <span style={{ color: activeTab === solution.id ? solution.accent : 'inherit' }}>
-                  {solution.icon}
-                </span>
-                <span className="hidden sm:inline">{solution.title}</span>
-              </button>
+                <p className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 mb-2">
+                  {stat.value}
+                </p>
+                <p className="text-zinc-400 font-medium">{stat.label}</p>
+              </motion.div>
             ))}
           </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-            >
-              {/* Info Card */}
-              <div className="p-8 md:p-12 rounded-[2.5rem] bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-                <div 
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8"
-                  style={{ backgroundColor: `${activeSolution.accent}20`, color: activeSolution.accent }}
-                >
-                  {activeSolution.icon}
-                </div>
-                
-                <h2 className="text-4xl font-bold mb-6">{activeSolution.title}</h2>
-                <p className="text-zinc-400 text-xl leading-relaxed mb-10">
-                  {activeSolution.description}
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                  {activeSolution.useCases.map((useCase, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 flex-shrink-0" style={{ color: activeSolution.accent }} />
-                      <span className="text-zinc-300 font-medium">{useCase}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex flex-wrap gap-4">
-                  <div className="px-6 py-4 rounded-2xl bg-white/5 border border-white/5 flex items-center gap-3">
-                    <TrendingUp className="w-5 h-5 text-cyan-400" />
-                    <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Result</div>
-                      <div className="font-bold">{activeSolution.result}</div>
-                    </div>
-                  </div>
-                  <div className="px-6 py-4 rounded-2xl bg-white/5 border border-white/5 flex items-center gap-3">
-                    <BarChart3 className="w-5 h-5 text-purple-400" />
-                    <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">ROI</div>
-                      <div className="font-bold">{activeSolution.roi}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Visual Placeholder */}
-              <div className="relative group aspect-square lg:aspect-auto lg:h-full min-h-[400px]">
-                <div 
-                  className="absolute inset-0 rounded-[2.5rem] opacity-20 blur-[100px]"
-                  style={{ backgroundColor: activeSolution.accent }}
-                />
-                <div className="relative h-full rounded-[2.5rem] border border-white/10 bg-black/40 overflow-hidden flex items-center justify-center p-12">
-                   <div className="text-center">
-                     <div 
-                       className="w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-8 animate-pulse"
-                       style={{ backgroundColor: `${activeSolution.accent}10`, color: activeSolution.accent }}
-                     >
-                       {activeSolution.icon}
-                     </div>
-                     <div className="text-2xl font-bold mb-4">Lena for {activeSolution.title}</div>
-                     <div className="flex justify-center gap-1 h-12">
-                       {[...Array(20)].map((_, i) => (
-                         <motion.div
-                           key={i}
-                           animate={{ height: [10, 40, 10] }}
-                           transition={{ duration: 1, repeat: Infinity, delay: i * 0.05 }}
-                           className="w-1 bg-white/20 rounded-full"
-                           style={{ backgroundColor: i % 3 === 0 ? activeSolution.accent : undefined }}
-                         />
-                       ))}
-                     </div>
-                   </div>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
         </div>
       </section>
 
@@ -249,4 +408,3 @@ export default function SolutionsPage() {
     </main>
   );
 }
-

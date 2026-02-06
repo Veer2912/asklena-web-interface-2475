@@ -1,93 +1,72 @@
-import { Suspense, lazy } from "react";
-import { motion } from "framer-motion";
-import { Link } from "wouter";
-import { Navbar } from "@/components/sections/navbar";
-import { Hero } from "@/components/sections/hero";
-import { Zap, Shield, BarChart3, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+// TODO(agent): This is a temporary "under construction" page.
+// Replace the entire contents of this file with the actual index page implementation
+// as instructed by the user. Delete this comment and the placeholder UI below.
 
-const LiveDemo = lazy(() => import("@/components/sections/live-demo").then(m => ({ default: m.LiveDemo })));
-const NeuralConsciousness = lazy(() => import("@/components/sections/neural-consciousness").then(m => ({ default: m.NeuralConsciousness })));
-const Footer = lazy(() => import("@/components/sections/footer").then(m => ({ default: m.Footer })));
+import { useState, useEffect } from "react";
 
-export default function Index() {
-  return (
-    <main className="min-h-screen bg-[#0a0e27] text-white selection:bg-cyan-500/30 overflow-x-hidden">
-      <Navbar />
-      <Hero />
+const AGENT_THOUGHTS = [
+	"Crafting the perfect landing page",
+	"Fine-tuning the color palette",
+	"Making buttons actually clickable",
+	"Ensuring it works on your phone too",
+	"Adding just the right amount of whitespace",
+	"Teaching forms to be polite",
+	"Making the logo pixel-perfect",
+	"Optimizing for speed (patience, ironic)",
+	"Writing code that future-me won't hate",
+	"Building something worth the wait",
+];
 
-      {/* Primary Navigation CTAs */}
-      <section className="py-24 px-6 relative z-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <QuickLink 
-              href="/features" 
-              title="Advanced Features" 
-              description="Deep dive into our advanced AI capabilities and neural engine."
-              icon={<Zap className="w-6 h-6" />}
-              accent="text-cyan-400"
-            />
-            <QuickLink 
-              href="/solutions" 
-              title="Industry Solutions" 
-              description="Discover how Lena transforms Healthcare, Finance, and more."
-              icon={<Shield className="w-6 h-6" />}
-              accent="text-purple-400"
-            />
-            <QuickLink 
-              href="/pricing" 
-              title="Flexible Pricing" 
-              description="Transparent, pay-as-you-go pricing for any scale."
-              icon={<BarChart3 className="w-6 h-6" />}
-              accent="text-emerald-400"
-            />
-          </div>
-        </div>
-      </section>
+function Index() {
+	const [thoughtIndex, setThoughtIndex] = useState(0);
 
-      <Suspense fallback={null}>
-        <div className="space-y-32 pb-32">
-          <LiveDemo />
-          <NeuralConsciousness />
-          
-          {/* Final Call to Action */}
-          <section className="px-6">
-            <div className="max-w-5xl mx-auto p-12 md:p-20 rounded-[3rem] bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 text-center relative overflow-hidden group">
-              <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <h2 className="text-4xl md:text-6xl font-bold mb-8">Ready to Hear the Future?</h2>
-              <p className="text-zinc-400 text-xl mb-12 max-w-2xl mx-auto">
-                Join 147+ companies already using Lena to revolutionize their customer experience.
-              </p>
-              <Link href="/pricing">
-                <Button size="lg" className="h-16 px-12 bg-white text-black hover:bg-zinc-200 rounded-2xl font-bold text-lg">
-                  Start Your Free Trial
-                </Button>
-              </Link>
-            </div>
-          </section>
-        </div>
-        <Footer />
-      </Suspense>
-    </main>
-  );
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setThoughtIndex((prev) => (prev + 1) % AGENT_THOUGHTS.length);
+		}, 3000);
+		return () => clearInterval(interval);
+	}, []);
+
+	return (
+		<div className="min-h-screen bg-[#f5f5f5] flex flex-col items-center justify-center p-8">
+
+			<h1 className="text-[clamp(2.5rem,10vw,6rem)] font-black tracking-[-0.03em] text-black leading-none mb-10 text-center">
+				Under
+				<br />
+				Construction
+			</h1>
+
+			{/* Agent thought with shimmer */}
+			<div className="h-8 flex items-center justify-center">
+				<p className="text-base md:text-lg shimmer-text italic">
+					"{AGENT_THOUGHTS[thoughtIndex]}"
+				</p>
+			</div>
+
+			<style>{`
+				.shimmer-text {
+					background: linear-gradient(
+						90deg,
+						#737373 0%,
+						#737373 40%,
+						#d4d4d4 50%,
+						#737373 60%,
+						#737373 100%
+					);
+					background-size: 200% 100%;
+					-webkit-background-clip: text;
+					background-clip: text;
+					-webkit-text-fill-color: transparent;
+					animation: shimmer 2s ease-in-out infinite;
+				}
+
+				@keyframes shimmer {
+					0% { background-position: 100% 0; }
+					100% { background-position: -100% 0; }
+				}
+			`}</style>
+		</div>
+	);
 }
 
-function QuickLink({ href, title, description, icon, accent }: { href: string; title: string; description: string; icon: React.ReactNode; accent: string }) {
-  return (
-    <Link href={href}>
-      <div className="group p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all cursor-pointer h-full flex flex-col">
-        <div className={`mb-6 w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center ${accent} group-hover:scale-110 transition-transform`}>
-          {icon}
-        </div>
-        <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-          {title}
-          <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-        </h3>
-        <p className="text-zinc-500 leading-relaxed">
-          {description}
-        </p>
-      </div>
-    </Link>
-  );
-}
-
+export default Index;
