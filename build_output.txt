@@ -1,0 +1,34 @@
+$ vite build
+vite v7.3.1 building sandbox_website_template environment for production...
+transforming...
+✓ 71 modules transformed.
+rendering chunks...
+Using vars defined in .env.local
+dist/sandbox_website_template/.dev.vars                                    0.31 kB
+dist/sandbox_website_template/.vite/manifest.json                          0.41 kB
+dist/sandbox_website_template/wrangler.json                                1.53 kB
+dist/sandbox_website_template/index.js                                    79.13 kB
+dist/sandbox_website_template/assets/_virtual_runable-badge-BF8QQGFw.js  570.11 kB
+✓ built in 1.08s
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 2157 modules transformed.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /home/user/asklena-website/src/web/components/sections/footer.tsx is dynamically imported by /home/user/asklena-website/src/web/pages/index.tsx but also statically imported by /home/user/asklena-website/src/web/pages/features.tsx, /home/user/asklena-website/src/web/pages/pricing.tsx, /home/user/asklena-website/src/web/pages/solutions.tsx, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/client/index.html                                    1.45 kB │ gzip:   0.59 kB
+dist/client/assets/index-Ckde7OjI.css                   117.36 kB │ gzip:  16.31 kB
+dist/client/assets/activity-C2Te2aLs.js                   0.24 kB │ gzip:   0.20 kB
+dist/client/assets/languages-DGP-W00Z.js                  0.31 kB │ gzip:   0.22 kB
+dist/client/assets/use-in-view-DlepecXl.js                0.81 kB │ gzip:   0.48 kB
+dist/client/assets/stats-section-BEhifRar.js              3.22 kB │ gzip:   1.28 kB
+dist/client/assets/final-cta-WyD6jDkn.js                  5.93 kB │ gzip:   1.66 kB
+dist/client/assets/neural-consciousness-PSl9fJ--.js       6.99 kB │ gzip:   2.14 kB
+dist/client/assets/voice-stream-visualizer-CFF9jGSo.js    7.61 kB │ gzip:   2.41 kB
+dist/client/assets/intelligence-layers-Dc8wHGgW.js        8.50 kB │ gzip:   2.38 kB
+dist/client/assets/_virtual_runable-badge-Q6hoh-Kh.js    12.38 kB │ gzip:   3.55 kB
+dist/client/assets/live-demo-BvVl5E9q.js                 12.41 kB │ gzip:   3.38 kB
+dist/client/assets/index-B3H_Z6LB.js                    470.86 kB │ gzip: 143.48 kB
+✓ built in 3.75s
