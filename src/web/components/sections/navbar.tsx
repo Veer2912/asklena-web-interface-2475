@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Volume2, VolumeX } from "lucide-react";
+import { useSound } from "../sound-provider";
 
 export function Navbar() {
+  const { isMuted, toggleMute } = useSound();
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
@@ -11,7 +15,7 @@ export function Navbar() {
       <nav className="flex items-center justify-between w-full max-w-6xl px-6 py-3 rounded-full border border-white/10 bg-black/50 backdrop-blur-xl pointer-events-auto">
         <div className="flex items-center gap-8">
           <a href="/" className="text-xl font-bold text-white font-outfit tracking-tight">
-            ASKLENA<span className="text-purple-500">.</span>
+            ASKLENA<span className="text-cyan-500">.</span>
           </a>
           <div className="hidden md:flex items-center gap-6">
             <NavLink href="#">Solutions</NavLink>
@@ -21,6 +25,14 @@ export function Navbar() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMute}
+            className="text-zinc-400 hover:text-white rounded-full"
+          >
+            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+          </Button>
           <a href="#" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
             Log in
           </a>
