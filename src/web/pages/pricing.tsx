@@ -3,18 +3,15 @@ import { useState } from "react";
 import { Navbar } from "@/components/sections/navbar";
 import { Footer } from "@/components/sections/footer";
 import { 
-  Check, 
-  ArrowRight,
-  Zap,
-  ShieldCheck,
-  Globe2,
-  Clock,
-  MessageSquare,
-  BarChart3,
-  TrendingUp,
-  Cpu
+  Check, X, ArrowRight, Zap, Globe2, Clock, ShieldCheck, Sparkles, Star, 
+  TrendingUp, Calculator, Phone, MessageSquare, Users, Building2,
+  HelpCircle, ChevronDown, ChevronUp, CheckCircle, Award, Headphones,
+  CreditCard, Gift, Shield, BarChart3, Rocket, Target, Heart
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
+// ============================================================================
+// PRICING PAGE - Complete pricing with tiers, calculator, FAQ, and comparison
+// ============================================================================
 
 const tiers = [
   {
@@ -27,16 +24,14 @@ const tiers = [
       { text: "5 Concurrent Calls", included: true },
       { text: "10 Languages", included: true },
       { text: "Email Support", included: true },
-      { text: "Standard Latency", included: true },
+      { text: "Basic Analytics", included: true },
       { text: "99% Uptime SLA", included: false },
       { text: "Custom Training", included: false },
-      { text: "Dedicated Account Manager", included: false },
+      { text: "Dedicated Manager", included: false },
     ],
     cta: "Start Free",
     highlight: false,
-    color: "from-blue-400 to-cyan-500",
-    bgGradient: "from-blue-500/10 to-cyan-500/5",
-    badge: "Most Popular"
+    color: "#3b82f6",
   },
   {
     name: "Professional",
@@ -48,404 +43,679 @@ const tiers = [
       { text: "100 Concurrent Calls", included: true },
       { text: "40+ Languages", included: true },
       { text: "Priority Support (2hr)", included: true },
-      { text: "Sub-200ms Latency", included: true },
+      { text: "Advanced Analytics", included: true },
       { text: "Custom Knowledge Base", included: true },
       { text: "99.9% Uptime SLA", included: true },
-      { text: "Dedicated Account Manager", included: false },
+      { text: "Dedicated Manager", included: false },
     ],
     cta: "Get Started",
     highlight: true,
-    color: "from-cyan-400 to-purple-500",
-    bgGradient: "from-cyan-500/10 to-purple-500/5",
-    badge: "Recommended"
+    color: "#06b6d4",
+    badge: "Most Popular"
   },
   {
     name: "Enterprise",
     price: "Custom",
-    period: "tailored to you",
-    description: "For high-volume deployments with custom requirements.",
+    period: "tailored pricing",
+    description: "For high-volume deployments with custom needs.",
     features: [
-      { text: "Everything in Professional", included: true },
-      { text: "Unlimited Concurrent Calls", included: true },
+      { text: "Everything in Pro", included: true },
+      { text: "Unlimited Calls", included: true },
       { text: "Custom SLAs", included: true },
       { text: "24/7 Premium Support", included: true },
-      { text: "Sub-150ms Latency", included: true },
-      { text: "Advanced Custom Training", included: true },
+      { text: "Custom Integrations", included: true },
+      { text: "Advanced Training", included: true },
       { text: "99.99% Uptime SLA", included: true },
-      { text: "Dedicated Account Manager", included: true },
+      { text: "Dedicated Manager", included: true },
     ],
-    cta: "Schedule Demo",
+    cta: "Contact Sales",
     highlight: false,
-    color: "from-purple-400 to-pink-500",
-    bgGradient: "from-purple-500/10 to-pink-500/5",
-    badge: "Enterprise"
+    color: "#a855f7",
   }
 ];
 
-// Premium pricing card component
-function PricingCard({ 
-  tier, 
-  index 
-}: { 
-  tier: typeof tiers[0]; 
-  index: number;
-}) {
-  const [isHovered, setIsHovered] = useState(false);
+const includedFeatures = [
+  { icon: Zap, title: "99.9% Uptime", desc: "Industry-leading reliability" },
+  { icon: Globe2, title: "40+ Languages", desc: "Global deployment ready" },
+  { icon: Clock, title: "<200ms Latency", desc: "Natural conversations" },
+  { icon: ShieldCheck, title: "Enterprise Security", desc: "SOC 2, HIPAA, GDPR" },
+];
 
+const faqs = [
+  {
+    question: "What counts as a conversation?",
+    answer: "A conversation is counted as a complete call session from connection to hang-up. Multi-turn interactions within the same call count as one conversation."
+  },
+  {
+    question: "Can I switch plans anytime?",
+    answer: "Yes! You can upgrade or downgrade your plan at any time. When upgrading, you'll get immediate access to new features. When downgrading, changes take effect at the next billing cycle."
+  },
+  {
+    question: "Do you offer volume discounts?",
+    answer: "Enterprise customers get custom pricing based on volume. Contact our sales team for a quote tailored to your needs."
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer: "We accept all major credit cards (Visa, MasterCard, Amex), ACH bank transfers, and wire transfers for enterprise accounts."
+  },
+  {
+    question: "Is there a free trial?",
+    answer: "Yes! All new accounts get $50 in free credits to test our platform. No credit card required to start."
+  },
+  {
+    question: "What happens if I exceed my plan limits?",
+    answer: "You'll receive alerts as you approach limits. Additional usage is billed at the per-conversation rate for your plan tier."
+  },
+];
+
+const comparisonData = [
+  { feature: "Concurrent Calls", starter: "5", pro: "100", enterprise: "Unlimited" },
+  { feature: "Languages", starter: "10", pro: "40+", enterprise: "40+" },
+  { feature: "Response Time", starter: "Standard", pro: "<200ms", enterprise: "<150ms" },
+  { feature: "Uptime SLA", starter: "99%", pro: "99.9%", enterprise: "99.99%" },
+  { feature: "Support", starter: "Email", pro: "Priority (2hr)", enterprise: "24/7 Premium" },
+  { feature: "Custom Training", starter: "—", pro: "Basic", enterprise: "Advanced" },
+  { feature: "Analytics", starter: "Basic", pro: "Advanced", enterprise: "Custom" },
+  { feature: "Integrations", starter: "Standard", pro: "Standard", enterprise: "Custom" },
+];
+
+const guarantees = [
+  { icon: Gift, title: "Free Credits", desc: "$50 to start, no card required", color: "#06b6d4" },
+  { icon: Shield, title: "Money-Back", desc: "30-day satisfaction guarantee", color: "#10b981" },
+  { icon: Heart, title: "No Contracts", desc: "Cancel anytime, no questions", color: "#ec4899" },
+  { icon: Rocket, title: "Same-Day Setup", desc: "Go live within hours", color: "#a855f7" },
+];
+
+const addOns = [
+  { name: "Voice Cloning", price: "$500", period: "one-time", desc: "Create custom brand voices" },
+  { name: "Priority Escalation", price: "$99", period: "/month", desc: "Direct access to engineering" },
+  { name: "Custom Reports", price: "$199", period: "/month", desc: "Tailored analytics dashboards" },
+  { name: "Training Session", price: "$299", period: "per session", desc: "1-on-1 onboarding call" },
+];
+
+// Hero Section
+function PricingHero() {
+  return (
+    <section className="relative pt-32 pb-16 px-6 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[200px]" />
+        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[200px]" />
+      </div>
+
+      <div className="max-w-4xl mx-auto relative z-10 text-center">
+        <motion.span
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-sm font-semibold text-cyan-400 mb-6"
+        >
+          <TrendingUp className="w-4 h-4" />
+          TRANSPARENT PRICING
+        </motion.span>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-5xl md:text-7xl font-black text-white mb-6"
+        >
+          Simple Pricing,{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+            Powerful Results
+          </span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-xl text-zinc-400 max-w-2xl mx-auto"
+        >
+          Pay only for what you use. No hidden fees. Scale with confidence.
+        </motion.p>
+      </div>
+    </section>
+  );
+}
+
+// Pricing Card
+function PricingCard({ tier, index }: { tier: typeof tiers[0]; index: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30, scale: 0.95 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`relative group h-full transition-all duration-300 ${tier.highlight ? "lg:scale-105" : ""}`}
+      transition={{ delay: index * 0.1 }}
+      className={`relative ${tier.highlight ? "lg:scale-105 z-10" : ""}`}
     >
-      {/* Glow effect */}
-      <motion.div
-        className={`absolute inset-0 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10`}
-        style={{
-          background: `linear-gradient(135deg, rgba(6,182,212,0.2), rgba(124,58,237,0.1))`
-        }}
-      />
-
-      {/* Card container */}
-      <div className={`relative h-full p-8 md:p-10 rounded-3xl border-2 transition-all duration-500 overflow-hidden ${
-        tier.highlight
-          ? "border-cyan-500/50 bg-gradient-to-br " + tier.bgGradient
-          : "border-white/10 hover:border-white/30 bg-white/[0.02]"
-      }`}>
-
-        {/* Animated background accent */}
-        <motion.div
-          className={`absolute inset-0 bg-gradient-to-br ${tier.color}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 0.03 : tier.highlight ? 0.05 : 0 }}
-          transition={{ duration: 0.3 }}
+      {/* Glow effect for highlighted */}
+      {tier.highlight && (
+        <div 
+          className="absolute -inset-2 rounded-3xl blur-xl opacity-30"
+          style={{ backgroundColor: tier.color }}
         />
+      )}
 
+      <div 
+        className={`relative h-full p-8 rounded-3xl border backdrop-blur-xl ${
+          tier.highlight ? "" : "bg-white/5"
+        }`}
+        style={{
+          borderColor: tier.highlight ? `${tier.color}50` : "rgba(255,255,255,0.1)",
+          background: tier.highlight ? `linear-gradient(135deg, ${tier.color}15, transparent)` : undefined,
+        }}
+      >
         {/* Badge */}
         {tier.badge && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            className={`absolute top-6 right-6 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase ${
-              tier.highlight
-                ? "bg-gradient-to-r " + tier.color + " text-white"
-                : "bg-white/10 text-cyan-400"
-            }`}
+          <div 
+            className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-1"
+            style={{ backgroundColor: tier.color, color: "white" }}
           >
+            <Star className="w-3 h-3" />
             {tier.badge}
-          </motion.div>
+          </div>
         )}
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col h-full">
-          {/* Header */}
-          <div className="mb-8">
-            <h3 className="text-3xl font-bold mb-2">{tier.name}</h3>
-            <p className="text-zinc-400 text-sm mb-6">{tier.description}</p>
+        {/* Header */}
+        <div className="text-center mb-8 pt-2">
+          <h3 className="text-2xl font-bold text-white mb-2">{tier.name}</h3>
+          <p className="text-zinc-400 text-sm mb-6">{tier.description}</p>
+          
+          <div className="mb-2">
+            <span className="text-5xl font-black" style={{ color: tier.color }}>
+              {tier.price}
+            </span>
+          </div>
+          <span className="text-zinc-500 text-sm">{tier.period}</span>
+        </div>
 
-            {/* Price */}
-            <div className="mb-2">
-              <span className={`text-5xl font-bold ${tier.highlight ? "text-transparent bg-clip-text bg-gradient-to-r " + tier.color : "text-white"}`}>
-                {tier.price}
+        {/* CTA */}
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className={`w-full py-4 rounded-xl font-bold mb-8 flex items-center justify-center gap-2 ${
+            tier.highlight
+              ? "text-white"
+              : "bg-white/10 text-white border border-white/20 hover:bg-white/20"
+          }`}
+          style={tier.highlight ? { background: `linear-gradient(135deg, ${tier.color}, ${tier.color}dd)` } : {}}
+        >
+          {tier.cta}
+          <ArrowRight className="w-5 h-5" />
+        </motion.button>
+
+        {/* Features */}
+        <div className="space-y-3">
+          {tier.features.map((feature, i) => (
+            <div key={i} className="flex items-center gap-3">
+              {feature.included ? (
+                <Check className="w-5 h-5 flex-shrink-0" style={{ color: tier.color }} />
+              ) : (
+                <X className="w-5 h-5 flex-shrink-0 text-zinc-700" />
+              )}
+              <span className={`text-sm ${feature.included ? "text-zinc-300" : "text-zinc-600"}`}>
+                {feature.text}
               </span>
-              <span className="text-zinc-400 text-sm ml-2">{tier.period}</span>
             </div>
-          </div>
-
-          {/* CTA Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`w-full py-4 px-6 rounded-xl font-bold text-lg mb-8 transition-all flex items-center justify-center gap-2 ${
-              tier.highlight
-                ? `bg-gradient-to-r ${tier.color} text-white shadow-[0_8px_32px_rgba(6,182,212,0.3)] hover:shadow-[0_12px_48px_rgba(6,182,212,0.5)]`
-                : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
-            }`}
-          >
-            {tier.cta}
-            <ArrowRight className="w-5 h-5" />
-          </motion.button>
-
-          {/* Features list */}
-          <div className="space-y-4 flex-1">
-            {tier.features.map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="flex items-start gap-3"
-              >
-                <motion.div
-                  animate={isHovered ? { scale: [1, 1.2, 1] } : {}}
-                  transition={{ duration: 0.6, repeat: Infinity }}
-                >
-                  <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                    feature.included 
-                      ? `text-transparent bg-clip-text bg-gradient-to-r ${tier.color}`
-                      : "text-zinc-600"
-                  }`} />
-                </motion.div>
-                <span className={`text-sm ${feature.included ? "text-zinc-300" : "text-zinc-500"}`}>
-                  {feature.text}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Bottom accent */}
-          {tier.highlight && (
-            <div className="mt-8 pt-8 border-t border-white/10">
-              <p className="text-xs text-zinc-500 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-cyan-400" />
-                Most companies upgrade after 3 months
-              </p>
-            </div>
-          )}
+          ))}
         </div>
       </div>
     </motion.div>
   );
 }
 
-// Comparison feature component
-function ComparisonFeature({ 
-  name, 
-  description, 
-  icon: Icon 
-}: { 
-  name: string; 
-  description: string;
-  icon: React.ComponentType<{ className: string }>;
-}) {
+// Pricing Cards Section
+function PricingCards() {
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      className="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all"
-    >
-      <div className="flex items-center gap-3 mb-2">
-        <Icon className="w-5 h-5 text-cyan-400" />
-        <h4 className="font-semibold text-sm">{name}</h4>
+    <section className="py-8 px-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8">
+          {tiers.map((tier, index) => (
+            <PricingCard key={tier.name} tier={tier} index={index} />
+          ))}
+        </div>
       </div>
-      <p className="text-xs text-zinc-500">{description}</p>
-    </motion.div>
+    </section>
   );
 }
 
-export default function PricingPage() {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+// Guarantees Section
+function GuaranteesSection() {
+  return (
+    <section className="py-16 px-6">
+      <div className="max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {guarantees.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="p-5 rounded-2xl border border-white/10 bg-white/5 text-center group hover:border-white/20 transition-colors"
+            >
+              <div 
+                className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"
+                style={{ backgroundColor: `${item.color}15` }}
+              >
+                <item.icon className="w-6 h-6" style={{ color: item.color }} />
+              </div>
+              <h4 className="font-bold text-white mb-1">{item.title}</h4>
+              <p className="text-xs text-zinc-500">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Included Features
+function IncludedFeatures() {
+  return (
+    <section className="py-16 px-6 bg-gradient-to-b from-transparent via-cyan-500/5 to-transparent">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            Included in All Plans
+          </h2>
+          <p className="text-zinc-400">Every plan comes with these core features</p>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {includedFeatures.map((feature, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="p-5 rounded-2xl border border-white/10 bg-white/5 text-center"
+            >
+              <feature.icon className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
+              <h4 className="font-bold text-white mb-1">{feature.title}</h4>
+              <p className="text-xs text-zinc-500">{feature.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ROI Calculator
+function ROICalculator() {
+  const [calls, setCalls] = useState(10000);
+  const [avgCallCost, setAvgCallCost] = useState(5);
+  
+  const lenaCost = calls * 0.40;
+  const traditionalCost = calls * avgCallCost;
+  const savings = traditionalCost - lenaCost;
+  const savingsPercent = Math.round((savings / traditionalCost) * 100);
+  
+  return (
+    <section className="py-16 px-6">
+      <div className="max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="p-8 rounded-3xl border border-cyan-500/20 bg-zinc-900/50"
+        >
+          <div className="flex items-center gap-3 mb-8">
+            <Calculator className="w-8 h-8 text-cyan-400" />
+            <div>
+              <h2 className="text-2xl font-bold text-white">ROI Calculator</h2>
+              <p className="text-sm text-zinc-500">See your potential savings</p>
+            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            <div>
+              <label className="text-sm text-zinc-400 mb-3 block">Monthly Call Volume</label>
+              <input
+                type="range"
+                min="1000"
+                max="100000"
+                step="1000"
+                value={calls}
+                onChange={(e) => setCalls(Number(e.target.value))}
+                className="w-full accent-cyan-500 mb-2"
+              />
+              <div className="flex justify-between">
+                <span className="text-xs text-zinc-500">1K</span>
+                <span className="text-cyan-400 font-bold">{calls.toLocaleString()} calls</span>
+                <span className="text-xs text-zinc-500">100K</span>
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm text-zinc-400 mb-3 block">Current Cost per Call</label>
+              <input
+                type="range"
+                min="2"
+                max="15"
+                step="0.5"
+                value={avgCallCost}
+                onChange={(e) => setAvgCallCost(Number(e.target.value))}
+                className="w-full accent-cyan-500 mb-2"
+              />
+              <div className="flex justify-between">
+                <span className="text-xs text-zinc-500">$2</span>
+                <span className="text-cyan-400 font-bold">${avgCallCost.toFixed(2)}</span>
+                <span className="text-xs text-zinc-500">$15</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4">
+            <div className="p-4 rounded-xl bg-zinc-800/50 text-center">
+              <p className="text-sm text-zinc-500 mb-1">Current Cost</p>
+              <p className="text-2xl font-bold text-red-400">${traditionalCost.toLocaleString()}</p>
+            </div>
+            <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-center">
+              <p className="text-sm text-zinc-500 mb-1">With Lena</p>
+              <p className="text-2xl font-bold text-cyan-400">${lenaCost.toLocaleString()}</p>
+            </div>
+            <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-center">
+              <p className="text-sm text-zinc-500 mb-1">You Save</p>
+              <p className="text-2xl font-bold text-green-400">{savingsPercent}%</p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// Add-ons Section
+function AddOnsSection() {
+  return (
+    <section className="py-16 px-6 bg-gradient-to-b from-transparent via-purple-500/5 to-transparent">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-12">
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-xs font-bold text-purple-400 mb-4"
+          >
+            <Sparkles className="w-3 h-3" />
+            ADD-ONS
+          </motion.span>
+          
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            Enhance Your Plan
+          </h2>
+          <p className="text-zinc-400">Optional add-ons for advanced needs</p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {addOns.map((addon, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="p-5 rounded-2xl border border-white/10 bg-white/5 hover:border-purple-500/30 transition-colors"
+            >
+              <h4 className="font-bold text-white mb-1">{addon.name}</h4>
+              <div className="mb-3">
+                <span className="text-xl font-black text-purple-400">{addon.price}</span>
+                <span className="text-xs text-zinc-500 ml-1">{addon.period}</span>
+              </div>
+              <p className="text-sm text-zinc-500">{addon.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Comparison Table
+function ComparisonTable() {
+  return (
+    <section className="py-16 px-6">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            Compare Plans
+          </h2>
+          <p className="text-zinc-400">Find the perfect plan for your needs</p>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="text-left py-4 px-4 text-zinc-400 font-medium">Feature</th>
+                <th className="text-center py-4 px-4 text-zinc-400 font-medium">Starter</th>
+                <th className="text-center py-4 px-4 text-cyan-400 font-bold">Professional</th>
+                <th className="text-center py-4 px-4 text-zinc-400 font-medium">Enterprise</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comparisonData.map((row, i) => (
+                <tr key={i} className="border-b border-white/5">
+                  <td className="py-4 px-4 text-zinc-300 text-sm">{row.feature}</td>
+                  <td className="py-4 px-4 text-center text-zinc-400 text-sm">{row.starter}</td>
+                  <td className="py-4 px-4 text-center text-white text-sm font-medium bg-cyan-500/5">{row.pro}</td>
+                  <td className="py-4 px-4 text-center text-zinc-400 text-sm">{row.enterprise}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Enterprise Section
+function EnterpriseSection() {
+  const enterpriseFeatures = [
+    { icon: Users, title: "Unlimited Scale", desc: "Handle millions of calls without limits" },
+    { icon: Shield, title: "Custom SLAs", desc: "Tailored uptime and support agreements" },
+    { icon: Headphones, title: "24/7 Support", desc: "Dedicated team, always available" },
+    { icon: BarChart3, title: "Custom Analytics", desc: "Build your own reporting dashboards" },
+  ];
 
   return (
-    <main className="min-h-screen bg-[#0a0e27] text-white selection:bg-cyan-500/30 overflow-x-hidden">
-      <Navbar />
+    <section className="py-16 px-6 bg-gradient-to-b from-transparent via-purple-500/5 to-transparent">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-xs font-bold text-purple-400 mb-4"
+            >
+              <Building2 className="w-3 h-3" />
+              ENTERPRISE
+            </motion.span>
+            
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-3xl md:text-4xl font-bold text-white mb-6"
+            >
+              Need Custom{" "}
+              <span className="text-purple-400">Solutions?</span>
+            </motion.h2>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-zinc-400 mb-8"
+            >
+              For large-scale deployments with specific requirements, our enterprise 
+              plan offers fully customizable solutions with dedicated support.
+            </motion.p>
 
-      {/* Premium Hero Section */}
-      <section className="relative pt-40 pb-24 px-6 overflow-hidden">
-        {/* Animated background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            className="absolute -top-1/2 right-1/4 w-96 h-96 rounded-full bg-cyan-500/10 blur-[120px]"
-            animate={{ y: [0, 50, 0], opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 10, repeat: Infinity }}
-          />
-          <motion.div
-            className="absolute -bottom-1/2 left-1/4 w-96 h-96 rounded-full bg-purple-500/10 blur-[120px]"
-            animate={{ y: [0, -50, 0], opacity: [0.3, 0.5, 0.3] }}
-            transition={{ duration: 12, repeat: Infinity, delay: 1 }}
-          />
-        </div>
-
-        <div className="max-w-6xl mx-auto text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mb-8"
-          >
-            <span className="inline-block px-4 py-2 rounded-full bg-cyan-500/20 border border-cyan-500/50 text-sm font-semibold text-cyan-400 mb-6">
-              💰 TRANSPARENT PRICING
-            </span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-5xl md:text-7xl font-bold mb-6 tracking-tight leading-[1.2]"
-          >
-            Simple, Transparent{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
-              Pricing
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-lg md:text-xl text-zinc-400 max-w-4xl mx-auto mb-12"
-          >
-            No hidden fees. Pay only for conversations. Scale your deployments with confidence.
-          </motion.p>
-
-          {/* Billing toggle */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="inline-flex items-center gap-4 p-1 rounded-full bg-white/[0.05] border border-white/10 mb-12"
-          >
-            {["monthly", "annual"].map((cycle) => (
-              <button
-                key={cycle}
-                onClick={() => setBillingCycle(cycle as "monthly" | "annual")}
-                className="relative px-6 py-2 rounded-full font-semibold transition-all"
-              >
-                <AnimatePresence>
-                  {billingCycle === cycle && (
-                    <motion.div
-                      layoutId="billingBg"
-                      className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full border border-cyan-500/30"
-                      transition={{ type: "spring", bounce: 0.2 }}
-                    />
-                  )}
-                </AnimatePresence>
-                <span className="relative z-10">{cycle === "monthly" ? "Monthly" : "Annual"}</span>
-              </button>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Pricing Cards */}
-      <section className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-            {tiers.map((tier, index) => (
-              <PricingCard key={tier.name} tier={tier} index={index} />
-            ))}
+            <motion.a
+              href="#"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold"
+            >
+              <Phone className="w-5 h-5" />
+              Talk to Sales
+            </motion.a>
           </div>
 
-          {/* What's Included Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-bold mb-4">
-              What's Included in{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-                All Plans
-              </span>
-            </h2>
-            <p className="text-zinc-400 text-lg mb-12 max-w-2xl mx-auto">
-              Every plan comes with enterprise-grade reliability and support.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <ComparisonFeature
-                icon={Zap}
-                name="99.9% Uptime"
-                description="Industry-leading reliability across all deployments"
-              />
-              <ComparisonFeature
-                icon={Globe2}
-                name="40+ Languages"
-                description="Deploy voice agents globally with localization"
-              />
-              <ComparisonFeature
-                icon={BarChart3}
-                name="Real-time Analytics"
-                description="Complete visibility into call performance and metrics"
-              />
-              <ComparisonFeature
-                icon={ShieldCheck}
-                name="Enterprise Security"
-                description="HIPAA, GDPR, SOC 2 Type II compliance included"
-              />
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-24 px-6 border-t border-white/10">
-        <div className="max-w-4xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl font-bold text-center mb-16"
-          >
-            Frequently Asked{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-              Questions
-            </span>
-          </motion.h2>
-
-          <div className="space-y-6">
-            {[
-              {
-                q: "How does per-conversation pricing work?",
-                a: "You're charged per completed conversation. Conversation length doesn't matter—a 30-second call costs the same as a 30-minute call."
-              },
-              {
-                q: "Can I change plans anytime?",
-                a: "Yes, upgrade or downgrade instantly. Changes take effect on your next billing cycle with pro-rata adjustments."
-              },
-              {
-                q: "What happens if I exceed my concurrent call limit?",
-                a: "Additional calls are queued and processed as capacity becomes available. Upgrade to Professional or Enterprise to increase limits."
-              },
-              {
-                q: "Do you offer discounts for annual commitments?",
-                a: "Yes! Annual plans include 20% savings. Contact our sales team for Enterprise custom pricing."
-              }
-            ].map((faq, i) => (
+          <div className="grid grid-cols-2 gap-4">
+            {enterpriseFeatures.map((feature, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="p-6 rounded-xl bg-white/[0.02] border border-white/10 hover:border-white/20 transition-all"
+                className="p-5 rounded-2xl border border-white/10 bg-white/5"
               >
-                <h3 className="font-bold text-lg text-cyan-400 mb-2">{faq.q}</h3>
-                <p className="text-zinc-400">{faq.a}</p>
+                <feature.icon className="w-8 h-8 text-purple-400 mb-3" />
+                <h4 className="font-bold text-white mb-1">{feature.title}</h4>
+                <p className="text-xs text-zinc-500">{feature.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* CTA Section */}
-      <section className="py-24 px-6">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto text-center p-12 md:p-16 rounded-3xl bg-gradient-to-br from-cyan-500/10 to-purple-500/5 border border-cyan-500/20"
-        >
-          <h2 className="text-4xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-zinc-400 text-lg mb-8 max-w-2xl mx-auto">
-            Try Lena free for 7 days. No credit card required. Full access to Professional features.
-          </p>
+// FAQ Section
+function FAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  return (
+    <section className="py-16 px-6">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-12">
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-bold text-cyan-400 mb-4"
+          >
+            <HelpCircle className="w-3 h-3" />
+            FAQ
+          </motion.span>
+          
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            Frequently Asked Questions
+          </h2>
+        </div>
+        
+        <div className="space-y-3">
+          {faqs.map((faq, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
+              className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden"
+            >
+              <button
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                className="w-full flex items-center justify-between p-5 text-left"
+              >
+                <span className="font-bold text-white">{faq.question}</span>
+                {openIndex === i ? (
+                  <ChevronUp className="w-5 h-5 text-zinc-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-zinc-400" />
+                )}
+              </button>
+              <AnimatePresence>
+                {openIndex === i && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 pb-5">
+                      <p className="text-zinc-400 text-sm">{faq.answer}</p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Final CTA
+function FinalCTA() {
+  return (
+    <section className="py-16 px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="max-w-4xl mx-auto text-center p-12 rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/10 to-purple-500/10"
+      >
+        <Sparkles className="w-12 h-12 text-cyan-400 mx-auto mb-6" />
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          Ready to Transform Your Support?
+        </h2>
+        <p className="text-lg text-zinc-400 mb-8">
+          Start free with $50 in credits. No credit card required.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-12 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold text-lg shadow-[0_8px_32px_rgba(6,182,212,0.3)] hover:shadow-[0_12px_48px_rgba(6,182,212,0.5)] transition-all"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold shadow-lg"
           >
             Start Free Trial
+            <ArrowRight className="w-5 h-5" />
           </motion.button>
-        </motion.div>
-      </section>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-white/20 text-white font-bold hover:bg-white/5"
+          >
+            <Phone className="w-5 h-5" />
+            Talk to Sales
+          </motion.button>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
 
+export default function PricingPage() {
+  return (
+    <main className="min-h-screen bg-black text-white overflow-x-hidden">
+      <Navbar />
+      <PricingHero />
+      <PricingCards />
+      <GuaranteesSection />
+      <IncludedFeatures />
+      <ROICalculator />
+      <AddOnsSection />
+      <ComparisonTable />
+      <EnterpriseSection />
+      <FAQSection />
+      <FinalCTA />
       <Footer />
     </main>
   );

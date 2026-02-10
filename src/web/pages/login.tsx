@@ -1,0 +1,414 @@
+import { motion } from "framer-motion";
+import { useState, useMemo } from "react";
+import { Navbar } from "@/components/sections/navbar";
+import { 
+  Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, 
+  Github, Mic, Waves
+} from "lucide-react";
+
+// ============================================================================
+// LOGIN PAGE - Unique Voice Authentication Portal with Neural Interface
+// ============================================================================
+
+// Animated Voice Waves Background
+function VoiceWavesBackground() {
+  const waves = useMemo(() => 
+    Array.from({ length: 5 }, (_, i) => ({
+      id: i,
+      delay: i * 0.5,
+      amplitude: 30 + i * 10,
+    })), []
+  );
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="loginWaveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#06b6d4" stopOpacity="0" />
+            <stop offset="50%" stopColor="#a855f7" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#ec4899" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {waves.map((wave) => (
+          <motion.path
+            key={wave.id}
+            d={`M0,${300 + wave.id * 40} Q250,${300 - wave.amplitude + wave.id * 40} 500,${300 + wave.id * 40} T1000,${300 + wave.id * 40}`}
+            fill="none"
+            stroke="url(#loginWaveGradient)"
+            strokeWidth="1"
+            initial={{ pathLength: 0 }}
+            animate={{
+              pathLength: 1,
+              d: [
+                `M0,${300 + wave.id * 40} Q250,${300 - wave.amplitude + wave.id * 40} 500,${300 + wave.id * 40} T1000,${300 + wave.id * 40}`,
+                `M0,${300 + wave.id * 40} Q250,${300 + wave.amplitude + wave.id * 40} 500,${300 + wave.id * 40} T1000,${300 + wave.id * 40}`,
+                `M0,${300 + wave.id * 40} Q250,${300 - wave.amplitude + wave.id * 40} 500,${300 + wave.id * 40} T1000,${300 + wave.id * 40}`,
+              ],
+            }}
+            transition={{
+              pathLength: { duration: 2, delay: wave.delay },
+              d: { duration: 4, delay: wave.delay, repeat: Infinity, ease: "easeInOut" },
+            }}
+          />
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+// Floating Particles
+function FloatingParticles() {
+  const particles = useMemo(() =>
+    Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 2 + Math.random() * 3,
+      duration: 5 + Math.random() * 5,
+      delay: Math.random() * 3,
+      color: ["#06b6d4", "#a855f7", "#ec4899"][Math.floor(Math.random() * 3)],
+    })), []
+  );
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            width: p.size,
+            height: p.size,
+            backgroundColor: p.color,
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [0.3, 0.7, 0.3],
+          }}
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Neural Connection Lines
+function NeuralConnections() {
+  return (
+    <div className="absolute inset-0 pointer-events-none opacity-20">
+      <svg className="w-full h-full">
+        <defs>
+          <linearGradient id="neuralGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#a855f7" stopOpacity="0.5" />
+          </linearGradient>
+        </defs>
+        {[...Array(8)].map((_, i) => (
+          <motion.line
+            key={i}
+            x1={`${10 + i * 12}%`}
+            y1="0%"
+            x2={`${90 - i * 12}%`}
+            y2="100%"
+            stroke="url(#neuralGradient)"
+            strokeWidth="1"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 2, delay: i * 0.2 }}
+          />
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+// Voice Authentication Orb
+function VoiceAuthOrb({ isListening }: { isListening: boolean }) {
+  return (
+    <motion.div
+      className="relative w-20 h-20 mx-auto mb-8"
+      animate={{ scale: isListening ? [1, 1.1, 1] : 1 }}
+      transition={{ duration: 1, repeat: isListening ? Infinity : 0 }}
+    >
+      {/* Outer rings */}
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          className="absolute inset-0 rounded-full border"
+          style={{
+            borderColor: isListening ? "rgba(6,182,212,0.5)" : "rgba(6,182,212,0.2)",
+            transform: `scale(${1 + i * 0.3})`,
+          }}
+          animate={isListening ? {
+            scale: [1 + i * 0.3, 1.2 + i * 0.3, 1 + i * 0.3],
+            opacity: [0.5, 0.2, 0.5],
+          } : {}}
+          transition={{ duration: 1.5, delay: i * 0.2, repeat: Infinity }}
+        />
+      ))}
+      
+      {/* Core */}
+      <motion.div
+        className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 flex items-center justify-center"
+        animate={{
+          boxShadow: isListening
+            ? ["0 0 30px rgba(6,182,212,0.5)", "0 0 50px rgba(168,85,247,0.5)", "0 0 30px rgba(6,182,212,0.5)"]
+            : "0 0 20px rgba(6,182,212,0.3)",
+        }}
+        transition={{ duration: 1, repeat: Infinity }}
+      >
+        <Mic className="w-8 h-8 text-white" />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// Input Field Component
+function InputField({
+  icon: Icon,
+  type,
+  placeholder,
+  value,
+  onChange,
+  showPasswordToggle,
+  onTogglePassword,
+  showPassword,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  type: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+  showPasswordToggle?: boolean;
+  onTogglePassword?: () => void;
+  showPassword?: boolean;
+}) {
+  return (
+    <div className="relative group">
+      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity" />
+      
+      <div className="relative flex items-center">
+        <Icon className="absolute left-4 w-5 h-5 text-zinc-500 group-focus-within:text-cyan-400 transition-colors" />
+        
+        <input
+          type={showPasswordToggle ? (showPassword ? "text" : "password") : type}
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full pl-12 pr-12 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all"
+        />
+        
+        {showPasswordToggle && (
+          <button
+            type="button"
+            onClick={onTogglePassword}
+            className="absolute right-4 text-zinc-500 hover:text-white transition-colors"
+          >
+            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Social Login Button
+function SocialButton({ icon: Icon, label, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; onClick: () => void }) {
+  return (
+    <motion.button
+      onClick={onClick}
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      className="flex items-center justify-center gap-3 w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 hover:border-cyan-500/30 transition-all"
+    >
+      <Icon className="w-5 h-5" />
+      <span>{label}</span>
+    </motion.button>
+  );
+}
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    // Simulate login
+    setTimeout(() => setIsLoading(false), 2000);
+  };
+
+  return (
+    <main className="min-h-screen bg-black text-white overflow-hidden">
+      <Navbar />
+      
+      {/* Background effects */}
+      <VoiceWavesBackground />
+      <FloatingParticles />
+      <NeuralConnections />
+      
+      {/* Background gradients */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[200px]" />
+        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[200px]" />
+      </div>
+
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-md"
+        >
+          {/* Login Card */}
+          <div className="relative">
+            {/* Card glow */}
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-xl" />
+            
+            <div className="relative p-8 rounded-3xl bg-zinc-950/80 border border-white/10 backdrop-blur-xl">
+              {/* Voice Auth Orb */}
+              <VoiceAuthOrb isListening={isListening} />
+              
+              {/* Header */}
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-black mb-2">Welcome Back</h1>
+                <p className="text-zinc-400">Sign in to access your voice agents</p>
+              </div>
+
+              {/* Login Form */}
+              <form onSubmit={handleLogin} className="space-y-4">
+                <InputField
+                  icon={Mail}
+                  type="email"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={setEmail}
+                />
+                
+                <InputField
+                  icon={Lock}
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={setPassword}
+                  showPasswordToggle
+                  showPassword={showPassword}
+                  onTogglePassword={() => setShowPassword(!showPassword)}
+                />
+
+                {/* Forgot Password */}
+                <div className="flex justify-end">
+                  <a href="#" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
+                    Forgot password?
+                  </a>
+                </div>
+
+                {/* Login Button */}
+                <motion.button
+                  type="submit"
+                  disabled={isLoading}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="relative w-full py-4 rounded-xl font-bold text-white overflow-hidden group"
+                >
+                  {/* Button gradient background */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500" />
+                  
+                  {/* Shimmer effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                    animate={{ x: ["-100%", "100%"] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  />
+                  
+                  <span className="relative flex items-center justify-center gap-2">
+                    {isLoading ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                      />
+                    ) : (
+                      <>
+                        <span>Sign In</span>
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </span>
+                </motion.button>
+              </form>
+
+              {/* Voice Login Option */}
+              <div className="mt-6">
+                <motion.button
+                  onClick={() => setIsListening(!isListening)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-3 transition-all ${
+                    isListening
+                      ? "bg-cyan-500/20 border-2 border-cyan-500 text-cyan-400"
+                      : "bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:border-cyan-500/30"
+                  }`}
+                >
+                  <Mic className={`w-5 h-5 ${isListening ? "animate-pulse" : ""}`} />
+                  <span>{isListening ? "Listening..." : "Sign in with Voice"}</span>
+                  {isListening && <Waves className="w-5 h-5 animate-pulse" />}
+                </motion.button>
+              </div>
+
+              {/* Divider */}
+              <div className="flex items-center gap-4 my-6">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                <span className="text-xs text-zinc-500 uppercase tracking-widest">or continue with</span>
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+              </div>
+
+              {/* Social Login */}
+              <div className="grid grid-cols-2 gap-3">
+                <SocialButton icon={Mail} label="Google" onClick={() => {}} />
+                <SocialButton icon={Github} label="GitHub" onClick={() => {}} />
+              </div>
+
+              {/* Sign Up Link */}
+              <p className="text-center text-zinc-400 mt-8">
+                Don't have an account?{" "}
+                <a href="#" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
+                  Get started free
+                </a>
+              </p>
+            </div>
+          </div>
+
+          {/* Trust badges */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="flex items-center justify-center gap-6 mt-8 text-zinc-500"
+          >
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-cyan-400" />
+              <span className="text-xs">SOC 2 Compliant</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-purple-400" />
+              <span className="text-xs">256-bit Encryption</span>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+    </main>
+  );
+}

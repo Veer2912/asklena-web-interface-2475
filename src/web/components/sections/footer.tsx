@@ -1,155 +1,276 @@
 import { motion } from "framer-motion";
-import { SiLinkedin, SiX, SiYoutube, SiGithub } from "react-icons/si";
-import { Mail, ArrowRight, Globe2, Phone, MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useMemo } from "react";
+import { 
+  Twitter, Linkedin, Github, Mail,
+  ArrowUpRight
+} from "lucide-react";
 
-export function Footer() {
-  const currentYear = new Date().getFullYear();
+// ============================================================================
+// NEURAL NETWORK FOOTER - Footer with animated neural connection background
+// ============================================================================
+
+// Neural Network Background
+function NeuralBackground() {
+  const nodes = useMemo(() => 
+    Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      x: 5 + (i % 5) * 23 + Math.random() * 5,
+      y: 10 + Math.floor(i / 5) * 25 + Math.random() * 5,
+    })), []
+  );
+
+  const connections = useMemo(() => {
+    const result: { from: number; to: number }[] = [];
+    nodes.forEach((node, i) => {
+      // Connect to nearby nodes
+      nodes.forEach((other, j) => {
+        if (i < j) {
+          const dist = Math.sqrt(
+            Math.pow(node.x - other.x, 2) + Math.pow(node.y - other.y, 2)
+          );
+          if (dist < 30) {
+            result.push({ from: i, to: j });
+          }
+        }
+      });
+    });
+    return result;
+  }, [nodes]);
 
   return (
-    <footer className="bg-black border-t border-white/5 pt-32 pb-12 relative overflow-hidden font-sans">
-      {/* Background Decor */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-20">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-purple-500/10 blur-[120px] rounded-full" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/10 blur-[120px] rounded-full" />
-      </div>
+    <svg className="absolute inset-0 w-full h-full opacity-20" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="neural-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#06b6d4" />
+          <stop offset="50%" stopColor="#a855f7" />
+          <stop offset="100%" stopColor="#ec4899" />
+        </linearGradient>
+      </defs>
+      
+      {/* Connections */}
+      {connections.map((conn, i) => (
+        <motion.line
+          key={i}
+          x1={`${nodes[conn.from].x}%`}
+          y1={`${nodes[conn.from].y}%`}
+          x2={`${nodes[conn.to].x}%`}
+          y2={`${nodes[conn.to].y}%`}
+          stroke="url(#neural-gradient)"
+          strokeWidth="1"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: [0.1, 0.3, 0.1] }}
+          transition={{ 
+            pathLength: { duration: 2, delay: i * 0.05 },
+            opacity: { duration: 3, repeat: Infinity, delay: i * 0.1 }
+          }}
+        />
+      ))}
+      
+      {/* Nodes */}
+      {nodes.map((node, i) => (
+        <motion.circle
+          key={i}
+          cx={`${node.x}%`}
+          cy={`${node.y}%`}
+          r="3"
+          fill="url(#neural-gradient)"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ 
+            scale: [1, 1.5, 1], 
+            opacity: [0.3, 0.6, 0.3] 
+          }}
+          transition={{ 
+            duration: 2 + Math.random() * 2, 
+            repeat: Infinity,
+            delay: i * 0.1 
+          }}
+        />
+      ))}
+    </svg>
+  );
+}
 
-      <div className="max-w-7xl mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
-          {/* Brand Column */}
-          <div className="lg:col-span-4 space-y-8">
-            <a href="/" className="text-3xl font-bold text-white tracking-tighter uppercase">
-              ASKLENA<span className="text-purple-500">.</span>
-            </a>
-            <p className="text-zinc-500 text-lg leading-relaxed max-w-sm">
-              The world's most human-like AI voice agents for enterprise customer engagement. Delivering sub-200ms latency and deep emotional intelligence.
+// Animated Logo
+function FooterLogo() {
+  return (
+    <a href="/" className="inline-block">
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        className="flex items-center gap-3"
+      >
+        {/* Logo mark */}
+        <div className="relative w-10 h-10">
+          <motion.div
+            className="absolute inset-0 rounded-xl border border-cyan-500/30"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          />
+          <div className="absolute inset-1 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600" />
+          <motion.div
+            className="absolute inset-1 rounded-lg bg-cyan-400"
+            animate={{ opacity: [0, 0.3, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </div>
+        
+        <div>
+          <span className="text-2xl font-bold text-white tracking-tight block">
+            ASKLENA<span className="text-cyan-400">.</span>
+          </span>
+          <span className="text-[10px] text-zinc-500 uppercase tracking-widest">
+            Voice AI Platform
+          </span>
+        </div>
+      </motion.div>
+    </a>
+  );
+}
+
+// Social Link
+function SocialLink({ href, icon: Icon, label }: { href: string; icon: typeof Twitter; label: string }) {
+  return (
+    <motion.a
+      href={href}
+      whileHover={{ scale: 1.1, y: -2 }}
+      whileTap={{ scale: 0.95 }}
+      className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-cyan-400 hover:border-cyan-500/30 hover:bg-cyan-500/10 transition-colors"
+      aria-label={label}
+    >
+      <Icon className="w-5 h-5" />
+    </motion.a>
+  );
+}
+
+// Footer Link
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <motion.a
+      href={href}
+      whileHover={{ x: 4 }}
+      className="text-zinc-400 hover:text-cyan-400 transition-colors text-sm flex items-center gap-1 group"
+    >
+      {children}
+      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+    </motion.a>
+  );
+}
+
+const footerLinks = {
+  Product: [
+    { name: "Features", href: "/features" },
+    { name: "Solutions", href: "/solutions" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Integrations", href: "#" },
+    { name: "API Docs", href: "#" },
+  ],
+  Company: [
+    { name: "About", href: "#" },
+    { name: "Blog", href: "#" },
+    { name: "Careers", href: "#" },
+    { name: "Press Kit", href: "#" },
+    { name: "Contact", href: "#" },
+  ],
+  Legal: [
+    { name: "Privacy", href: "#" },
+    { name: "Terms", href: "#" },
+    { name: "Security", href: "#" },
+    { name: "Compliance", href: "#" },
+  ],
+};
+
+export function Footer() {
+  return (
+    <footer className="relative bg-zinc-950 border-t border-white/5 overflow-hidden">
+      {/* Neural background */}
+      <NeuralBackground />
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-8">
+          {/* Brand column */}
+          <div className="lg:col-span-2 space-y-6">
+            <FooterLogo />
+            
+            <p className="text-zinc-400 text-sm max-w-sm leading-relaxed">
+              Enterprise Voice AI that handles customer calls with human-like intelligence. 
+              40+ languages. Sub-200ms latency. 99.99% uptime.
             </p>
-            <div className="flex gap-4">
-              <SocialLink href="#" icon={<SiX />} />
-              <SocialLink href="#" icon={<SiLinkedin />} />
-              <SocialLink href="#" icon={<SiGithub />} />
-              <SocialLink href="#" icon={<SiYoutube />} />
+            
+            {/* Social links */}
+            <div className="flex gap-3">
+              <SocialLink href="#" icon={Twitter} label="Twitter" />
+              <SocialLink href="#" icon={Linkedin} label="LinkedIn" />
+              <SocialLink href="#" icon={Github} label="GitHub" />
+              <SocialLink href="#" icon={Mail} label="Email" />
             </div>
             
-            <div className="pt-8 space-y-4">
-              <div className="flex items-center gap-3 text-zinc-500 text-sm">
-                <Globe2 className="w-4 h-4 text-purple-500" />
-                <span>Global Headquaters: San Francisco, CA</span>
-              </div>
-              <div className="flex items-center gap-3 text-zinc-500 text-sm">
-                <Phone className="w-4 h-4 text-blue-500" />
-                <span>+1 (888) ASKLENA-AI</span>
-              </div>
-              <div className="flex items-center gap-3 text-zinc-500 text-sm">
-                <MessageSquare className="w-4 h-4 text-pink-500" />
-                <span>support@asklena.ai</span>
-              </div>
+            {/* Stats */}
+            <div className="flex gap-6 pt-4">
+              {[
+                { value: "10M+", label: "Conversations" },
+                { value: "147", label: "Agents" },
+                { value: "40+", label: "Languages" },
+              ].map((stat, i) => (
+                <div key={i}>
+                  <p className="text-xl font-bold text-cyan-400">{stat.value}</p>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest">{stat.label}</p>
+                </div>
+              ))}
             </div>
           </div>
           
-          {/* Links Columns */}
-          <div className="lg:col-span-4 grid grid-cols-2 gap-8">
-            <div className="space-y-8">
-              <h4 className="text-white font-bold text-sm uppercase tracking-widest">Solutions</h4>
-              <ul className="space-y-4">
-                <FooterLink href="#">Healthcare</FooterLink>
-                <FooterLink href="#">Logistics</FooterLink>
-                <FooterLink href="#">Finance</FooterLink>
-                <FooterLink href="#">Education</FooterLink>
-                <FooterLink href="#">Ecommerce</FooterLink>
+          {/* Links columns */}
+          {Object.entries(footerLinks).map(([category, links], i) => (
+            <motion.div
+              key={category}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4">
+                {category}
+              </h3>
+              <ul className="space-y-3">
+                {links.map((link) => (
+                  <li key={link.name}>
+                    <FooterLink href={link.href}>{link.name}</FooterLink>
+                  </li>
+                ))}
               </ul>
-            </div>
-            <div className="space-y-8">
-              <h4 className="text-white font-bold text-sm uppercase tracking-widest">Company</h4>
-              <ul className="space-y-4">
-                <FooterLink href="#">Platform</FooterLink>
-                <FooterLink href="#">Pricing</FooterLink>
-                <FooterLink href="#">API Docs</FooterLink>
-                <FooterLink href="#">Security</FooterLink>
-                <FooterLink href="#">Careers</FooterLink>
-              </ul>
-            </div>
-          </div>
-
-          {/* Newsletter Column */}
-          <div className="lg:col-span-4 space-y-8">
-            <div className="p-8 rounded-[2.5rem] bg-zinc-900/40 border border-white/5 backdrop-blur-xl relative overflow-hidden group">
-              <div className="relative z-10">
-                <h4 className="text-white font-bold text-lg mb-4">Neural Newsletter</h4>
-                <p className="text-zinc-500 text-sm mb-8 leading-relaxed">
-                  Get the latest updates on generative voice AI and enterprise automation.
-                </p>
-                
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                  <input 
-                    type="email" 
-                    placeholder="Enter your email" 
-                    className="w-full h-14 bg-black border border-white/5 rounded-2xl pl-12 pr-4 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-all"
-                  />
-                  <button className="absolute right-2 top-2 h-10 w-10 bg-white rounded-xl flex items-center justify-center text-black hover:bg-zinc-200 transition-all">
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-                <p className="text-[10px] text-zinc-700 mt-4 font-bold uppercase tracking-widest">
-                  NO SPAM. JUST PURE INTELLIGENCE.
-                </p>
-              </div>
-              
-              {/* Background Glow */}
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 blur-3xl rounded-full group-hover:bg-purple-500/20 transition-all duration-500" />
-            </div>
-            
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col">
-                <span className="text-white font-bold text-sm">99.9% Uptime</span>
-                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Operational Status</span>
-              </div>
-              <div className="w-px h-8 bg-white/5" />
-              <div className="flex flex-col">
-                <span className="text-white font-bold text-sm">SOC 2 TYPE II</span>
-                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Security Certified</span>
-              </div>
-            </div>
-          </div>
+            </motion.div>
+          ))}
         </div>
         
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-zinc-600 text-xs font-mono uppercase tracking-widest">
-            © {currentYear} ASKLENA AI ENGINE v4.2. ALL RIGHTS RESERVED.
+        {/* Bottom bar */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-16 pt-8 border-t border-white/5"
+        >
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-zinc-500 text-sm">
+              © {new Date().getFullYear()} Asklena AI. All rights reserved.
+            </p>
+            
+            {/* Certifications */}
+            <div className="flex items-center gap-4">
+              {["SOC 2", "HIPAA", "GDPR", "PCI DSS"].map((cert, i) => (
+                <motion.span
+                  key={cert}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="px-2 py-1 rounded text-[10px] font-bold text-zinc-500 uppercase tracking-widest bg-white/5 border border-white/5"
+                >
+                  {cert}
+                </motion.span>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-8">
-            <a href="#" className="text-zinc-600 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Privacy</a>
-            <a href="#" className="text-zinc-600 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Terms</a>
-            <a href="#" className="text-zinc-600 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors">Compliance</a>
-          </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
-  );
-}
-
-function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <li>
-      <a href={href} className="text-zinc-500 hover:text-purple-400 transition-all duration-300 text-sm flex items-center group">
-        <span className="w-0 group-hover:w-2 h-px bg-purple-500 mr-0 group-hover:mr-2 transition-all duration-300" />
-        {children}
-      </a>
-    </li>
-  );
-}
-
-function SocialLink({ href, icon }: { href: string; icon: React.ReactNode }) {
-  return (
-    <a 
-      href={href} 
-      className="w-12 h-12 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center text-zinc-400 hover:text-white hover:border-purple-500/50 hover:bg-purple-500/10 transition-all duration-300 shadow-xl"
-    >
-      <div className="text-xl">
-        {icon}
-      </div>
-    </a>
   );
 }

@@ -1,336 +1,360 @@
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { useRef } from "react";
-import { Mic, Zap, Brain, MessageSquare, Volume2, ArrowRight } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
+import { Mic, Zap, Brain, MessageSquare, Volume2 } from "lucide-react";
 
 const layers = [
   {
     id: 1,
     title: "Voice Recognition",
     description: "Real-time audio processing with sub-200ms latency.",
-    icon: <Mic className="w-6 h-6" />,
-    color: "from-cyan-500 to-cyan-400",
-    bgColor: "bg-cyan-500/10",
-    borderColor: "border-cyan-500/30",
-    content: "Waveform"
+    icon: Mic,
+    color: "#06b6d4",
+    gradientFrom: "from-cyan-500",
+    gradientTo: "to-cyan-400"
   },
   {
     id: 2,
     title: "Intent Analysis",
-    description: "Deep learning models identifying customer needs accurately.",
-    icon: <Zap className="w-6 h-6" />,
-    color: "from-blue-500 to-cyan-500",
-    bgColor: "bg-blue-500/10",
-    borderColor: "border-blue-500/30",
-    content: "Connections"
+    description: "Deep learning models identifying customer needs.",
+    icon: Zap,
+    color: "#3b82f6",
+    gradientFrom: "from-blue-500",
+    gradientTo: "to-cyan-500"
   },
   {
     id: 3,
-    title: "Context Awareness",
-    description: "Maintaining conversation state and memory across turns.",
-    icon: <Brain className="w-6 h-6" />,
-    color: "from-indigo-500 to-blue-500",
-    bgColor: "bg-indigo-500/10",
-    borderColor: "border-indigo-500/30",
-    content: "DataStreams"
+    title: "Context Engine",
+    description: "Maintaining conversation state across turns.",
+    icon: Brain,
+    color: "#6366f1",
+    gradientFrom: "from-indigo-500",
+    gradientTo: "to-blue-500"
   },
   {
     id: 4,
-    title: "Response Generation",
-    description: "Synthesizing human-like responses with personality.",
-    icon: <MessageSquare className="w-6 h-6" />,
-    color: "from-purple-500 to-indigo-500",
-    bgColor: "bg-purple-500/10",
-    borderColor: "border-purple-500/30",
-    content: "TextForming"
+    title: "Response Gen",
+    description: "Synthesizing human-like responses.",
+    icon: MessageSquare,
+    color: "#a855f7",
+    gradientFrom: "from-purple-500",
+    gradientTo: "to-indigo-500"
   },
   {
     id: 5,
-    title: "Human Delivery",
-    description: "Ultra-realistic voice synthesis with emotional range.",
-    icon: <Volume2 className="w-6 h-6" />,
-    color: "from-pink-500 to-purple-500",
-    bgColor: "bg-pink-500/10",
-    borderColor: "border-pink-500/30",
-    content: "VoiceOutput"
+    title: "Voice Output",
+    description: "Ultra-realistic voice synthesis.",
+    icon: Volume2,
+    color: "#ec4899",
+    gradientFrom: "from-pink-500",
+    gradientTo: "to-purple-500"
   }
 ];
 
+// Unique Component: Hexagonal Layer Node
+function HexagonNode({ layer, index, isActive, onClick }: { 
+  layer: typeof layers[0]; 
+  index: number;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const Icon = layer.icon;
+  
+  return (
+    <motion.div
+      onClick={onClick}
+      initial={{ opacity: 0, scale: 0.8 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.1 }}
+      whileHover={{ scale: 1.05 }}
+      className="relative cursor-pointer group"
+    >
+      {/* Hexagon Shape using clip-path */}
+      <div 
+        className={`relative w-24 h-28 sm:w-28 sm:h-32 md:w-32 md:h-36 transition-all duration-500 ${isActive ? 'scale-110' : ''}`}
+        style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}
+      >
+        {/* Background */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${layer.gradientFrom} ${layer.gradientTo} opacity-${isActive ? '100' : '20'} transition-opacity`} />
+        
+        {/* Inner content */}
+        <div className="absolute inset-[2px] bg-black flex flex-col items-center justify-center"
+          style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}
+        >
+          <Icon className={`w-6 h-6 sm:w-8 sm:h-8 transition-colors ${isActive ? 'text-white' : 'text-zinc-500'}`} />
+          <span className={`text-[10px] sm:text-xs mt-2 font-bold uppercase tracking-wider text-center px-2 transition-colors ${isActive ? 'text-white' : 'text-zinc-600'}`}>
+            {layer.title.split(' ')[0]}
+          </span>
+        </div>
+      </div>
+
+      {/* Glow effect when active */}
+      {isActive && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 -z-10"
+          style={{
+            boxShadow: `0 0 60px 20px ${layer.color}40`,
+            clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)"
+          }}
+        />
+      )}
+
+      {/* Layer number badge */}
+      <div className={`absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${isActive ? 'bg-white text-black' : 'bg-zinc-800 text-zinc-500'}`}>
+        {layer.id}
+      </div>
+    </motion.div>
+  );
+}
+
+// Unique Component: Data Flow Connector
+function DataFlowConnector({ isActive, color }: { isActive: boolean; color: string }) {
+  return (
+    <div className="hidden md:flex items-center justify-center w-12 lg:w-16">
+      <div className="relative w-full h-1">
+        {/* Base line */}
+        <div className="absolute inset-0 bg-zinc-800 rounded-full" />
+        
+        {/* Animated flow */}
+        {isActive && (
+          <motion.div
+            initial={{ x: "-100%" }}
+            animate={{ x: "100%" }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-y-0 w-8 rounded-full"
+            style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+          />
+        )}
+      </div>
+      
+      {/* Arrow head */}
+      <motion.div
+        animate={isActive ? { x: [0, 4, 0], opacity: [0.5, 1, 0.5] } : {}}
+        transition={{ duration: 1, repeat: Infinity }}
+        className="w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent"
+        style={{ borderLeftColor: isActive ? color : '#27272a' }}
+      />
+    </div>
+  );
+}
+
+// Unique Component: Waveform Visualization
+function WaveformVisualization({ isActive, color }: { isActive: boolean; color: string }) {
+  return (
+    <div className="flex items-center justify-center gap-[2px] h-12">
+      {[...Array(12)].map((_, i) => (
+        <motion.div
+          key={i}
+          animate={isActive ? {
+            height: [8, 24 + Math.random() * 16, 8],
+            opacity: [0.4, 1, 0.4]
+          } : { height: 8, opacity: 0.2 }}
+          transition={{
+            duration: 0.8,
+            repeat: Infinity,
+            delay: i * 0.05,
+            ease: "easeInOut"
+          }}
+          className="w-1 rounded-full"
+          style={{ backgroundColor: color }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Unique Component: Processing Particles
+function ProcessingParticles({ isActive, color }: { isActive: boolean; color: string }) {
+  return (
+    <div className="relative w-24 h-24">
+      {isActive && [...Array(8)].map((_, i) => (
+        <motion.div
+          key={i}
+          animate={{
+            rotate: [i * 45, i * 45 + 360],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute inset-0"
+        >
+          <motion.div
+            animate={{
+              scale: [0.5, 1, 0.5],
+              opacity: [0.3, 1, 0.3]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              delay: i * 0.15
+            }}
+            className="absolute top-0 left-1/2 w-2 h-2 -translate-x-1/2 rounded-full"
+            style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}` }}
+          />
+        </motion.div>
+      ))}
+      <div 
+        className="absolute inset-1/4 rounded-full opacity-20"
+        style={{ backgroundColor: color }}
+      />
+    </div>
+  );
+}
+
 export function IntelligenceLayers() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
+  const isInView = useInView(containerRef, { amount: 0.3 });
+  const [activeLayer, setActiveLayer] = useState(0);
+
+  // Auto-cycle through layers
+  const cycleRef = useRef<NodeJS.Timeout>();
+  
+  useState(() => {
+    cycleRef.current = setInterval(() => {
+      setActiveLayer(prev => (prev + 1) % layers.length);
+    }, 3000);
+    return () => clearInterval(cycleRef.current);
   });
+
+  const currentLayer = layers[activeLayer];
 
   return (
     <section 
       ref={containerRef}
-      className="py-32 md:py-48 lg:py-56 bg-black relative overflow-hidden"
+      className="py-24 md:py-32 lg:py-40 bg-black relative overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-16 md:mb-24 lg:mb-32 space-y-4 md:space-y-6"
+          className="text-center mb-16 md:mb-24"
         >
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 uppercase tracking-tighter leading-tight">
-            Lena's Intelligence <span className="block mt-2">Pipeline</span>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6"
+          >
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Neural Architecture</span>
+          </motion.div>
+          
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 tracking-tight">
+            Intelligence{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+              Pipeline
+            </span>
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto font-light leading-relaxed px-2">
-            Watch how voice flows through our intelligent neural network. Each layer processes, understands, and responds in real-time.
+          <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto">
+            Watch how voice data flows through Lena's neural layers in real-time.
           </p>
         </motion.div>
 
-        {/* Pipeline Container */}
-        <div className="relative">
-          {/* Connecting Lines */}
-          <div className="absolute inset-0 pointer-events-none">
-            {layers.map((_, index) => (
-              index < layers.length - 1 && (
-                <motion.svg
-                  key={`line-${index}`}
-                  className="absolute w-full h-full"
-                  style={{ top: 0, left: 0 }}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <defs>
-                    <linearGradient id={`gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="rgba(6,182,212,0.3)" />
-                      <stop offset="100%" stopColor="rgba(59,130,246,0.3)" />
-                    </linearGradient>
-                  </defs>
-                </motion.svg>
-              )
-            ))}
-          </div>
-
-          {/* Grid Layout for Layers */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6 lg:gap-0 relative">
-            {layers.map((layer, index) => (
-              <motion.div
-                key={layer.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="relative group"
-              >
-                {/* Arrow Connector - shown between items */}
-                {index < layers.length - 1 && (
-                  <div className="hidden lg:flex absolute -right-3 top-1/2 transform -translate-y-1/2 z-20 pointer-events-none">
-                    <motion.div
-                      animate={{ x: [0, 4, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      className="text-cyan-500/50"
-                    >
-                      <ArrowRight className="w-6 h-6" />
-                    </motion.div>
-                  </div>
-                )}
-
-                {/* Layer Card */}
-                <div className={`relative h-full p-6 sm:p-8 rounded-2xl border-2 transition-all duration-500 overflow-hidden ${layer.borderColor} hover:border-white/50 group cursor-pointer`}>
-                  
-                  {/* Background Gradient */}
-                  <div className={`absolute inset-0 ${layer.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                  
-                  {/* Animated Border Glow */}
-                  <motion.div
-                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100"
-                    animate={{
-                      boxShadow: ["0 0 0 0 rgba(6,182,212,0)", "0 0 30px 5px rgba(6,182,212,0.2)"]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-
-                  {/* Content */}
-                  <div className="relative z-10 space-y-4">
-                    {/* Icon with Counter */}
-                    <div className="flex items-center gap-3">
-                      <motion.div
-                        whileHover={{ scale: 1.1, rotate: 10 }}
-                        className={`p-3 sm:p-4 rounded-xl bg-gradient-to-br ${layer.color} text-white flex-shrink-0`}
-                      >
-                        {layer.icon}
-                      </motion.div>
-                      <div className="text-sm font-bold text-cyan-400 uppercase tracking-wider">
-                        Layer {layer.id}
-                      </div>
-                    </div>
-
-                    {/* Title */}
-                    <div>
-                      <h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">
-                        {layer.title}
-                      </h3>
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-sm text-zinc-400 leading-relaxed">
-                      {layer.description}
-                    </p>
-
-                    {/* Visual Animation */}
-                    <div className="pt-4 h-16 flex items-center justify-center rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors border border-white/5">
-                      {layer.content === "Waveform" && <WaveformAnimation />}
-                      {layer.content === "Connections" && <ConnectionsAnimation />}
-                      {layer.content === "DataStreams" && <DataStreamsAnimation />}
-                      {layer.content === "TextForming" && <TextFormingAnimation />}
-                      {layer.content === "VoiceOutput" && <VoiceOutputAnimation />}
-                    </div>
-                  </div>
-
-                  {/* Corner Accent */}
-                  <motion.div
-                    className="absolute -top-1 -right-1 w-12 h-12 border-t-2 border-r-2 border-cyan-500/0 group-hover:border-cyan-500/50 rounded-tr-2xl transition-colors"
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </div>
+        {/* Hexagonal Pipeline */}
+        <div className="flex flex-wrap justify-center items-center gap-2 md:gap-0 mb-16">
+          {layers.map((layer, index) => (
+            <div key={layer.id} className="flex items-center">
+              <HexagonNode
+                layer={layer}
+                index={index}
+                isActive={activeLayer === index}
+                onClick={() => setActiveLayer(index)}
+              />
+              {index < layers.length - 1 && (
+                <DataFlowConnector 
+                  isActive={activeLayer >= index} 
+                  color={layer.color}
+                />
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* Bottom Info */}
+        {/* Active Layer Details Panel */}
         <motion.div
+          key={activeLayer}
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mt-16 md:mt-24 text-center"
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="max-w-3xl mx-auto"
         >
-          <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto">
-            From voice input to natural response, <span className="text-cyan-400 font-semibold">all within &lt;200ms</span>. 
-            That's the power of Lena's unified intelligence pipeline.
+          <div className="relative p-8 md:p-12 rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.03] to-transparent overflow-hidden">
+            {/* Background glow */}
+            <div 
+              className="absolute inset-0 opacity-10"
+              style={{ background: `radial-gradient(circle at center, ${currentLayer.color}, transparent 70%)` }}
+            />
+
+            <div className="relative z-10 grid md:grid-cols-2 gap-8 items-center">
+              {/* Left: Visualization */}
+              <div className="flex flex-col items-center gap-6">
+                <ProcessingParticles isActive={isInView} color={currentLayer.color} />
+                <WaveformVisualization isActive={isInView} color={currentLayer.color} />
+              </div>
+
+              {/* Right: Details */}
+              <div className="text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
+                  <div 
+                    className={`p-3 rounded-xl bg-gradient-to-br ${currentLayer.gradientFrom} ${currentLayer.gradientTo}`}
+                  >
+                    <currentLayer.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-white">{currentLayer.title}</h3>
+                    <p className="text-sm text-zinc-500">Layer {currentLayer.id} of 5</p>
+                  </div>
+                </div>
+                
+                <p className="text-zinc-400 mb-6 leading-relaxed">
+                  {currentLayer.description}
+                </p>
+
+                {/* Progress indicator */}
+                <div className="flex gap-2">
+                  {layers.map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="h-1 rounded-full flex-1 cursor-pointer"
+                      style={{ 
+                        backgroundColor: i <= activeLayer ? currentLayer.color : '#27272a'
+                      }}
+                      onClick={() => setActiveLayer(i)}
+                      whileHover={{ scale: 1.1 }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Corner accents */}
+            <div className="absolute top-0 left-0 w-16 h-16 border-l-2 border-t-2 rounded-tl-3xl" style={{ borderColor: `${currentLayer.color}30` }} />
+            <div className="absolute bottom-0 right-0 w-16 h-16 border-r-2 border-b-2 rounded-br-3xl" style={{ borderColor: `${currentLayer.color}30` }} />
+          </div>
+        </motion.div>
+
+        {/* Bottom Stats */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-16 text-center"
+        >
+          <p className="text-sm text-zinc-500">
+            End-to-end processing in <span className="text-cyan-400 font-bold">&lt;200ms</span> • 
+            <span className="text-purple-400 font-bold"> 99.9%</span> accuracy • 
+            <span className="text-pink-400 font-bold"> 40+</span> languages
           </p>
         </motion.div>
       </div>
 
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05),transparent_70%)]" />
-        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-cyan-500/5 to-transparent rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-purple-500/5 to-transparent rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.05),transparent_50%)]" />
       </div>
     </section>
-  );
-}
-
-function WaveformAnimation() {
-  return (
-    <div className="flex items-center gap-1 h-10">
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={{
-            height: [10, 30, 15, 25, 10],
-          }}
-          transition={{
-            duration: 1.2,
-            repeat: Infinity,
-            delay: i * 0.1,
-            ease: "easeInOut"
-          }}
-          className="w-1.5 bg-gradient-to-t from-cyan-400 to-cyan-300 rounded-full"
-        />
-      ))}
-    </div>
-  );
-}
-
-function ConnectionsAnimation() {
-  return (
-    <div className="relative w-12 h-12">
-      {[...Array(3)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute inset-0 border-2 border-blue-400/50 rounded-lg"
-          animate={{
-            scale: [1, 1.3],
-            opacity: [0.6, 0],
-            borderColor: ["rgba(96, 165, 250, 0.5)", "rgba(96, 165, 250, 0)"]
-          }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            delay: i * 0.4,
-            ease: "easeOut"
-          }}
-        />
-      ))}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <Zap className="text-blue-400 w-5 h-5" />
-      </div>
-    </div>
-  );
-}
-
-function DataStreamsAnimation() {
-  return (
-    <div className="flex items-center justify-center gap-1 h-full">
-      {[...Array(4)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="w-1 h-8 bg-gradient-to-b from-indigo-400 to-transparent rounded-full"
-          animate={{
-            y: [-10, 10],
-            opacity: [0.3, 1, 0.3]
-          }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            delay: i * 0.2,
-            ease: "easeInOut"
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function TextFormingAnimation() {
-  const characters = "RESPOND".split("");
-  return (
-    <div className="flex items-center justify-center gap-1.5">
-      {characters.map((char, i) => (
-        <motion.span
-          key={i}
-          animate={{
-            opacity: [0.3, 1, 0.3],
-            y: [0, -3, 0]
-          }}
-          transition={{
-            duration: 1.2,
-            repeat: Infinity,
-            delay: i * 0.1
-          }}
-          className="text-xs font-bold text-purple-400"
-        >
-          {char}
-        </motion.span>
-      ))}
-    </div>
-  );
-}
-
-function VoiceOutputAnimation() {
-  return (
-    <div className="flex items-center justify-center gap-1.5">
-      {[...Array(3)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={{
-            scaleY: [0.4, 1, 0.4],
-            opacity: [0.5, 1, 0.5]
-          }}
-          transition={{
-            duration: 1,
-            repeat: Infinity,
-            delay: i * 0.15,
-            ease: "easeInOut"
-          }}
-          className="w-1.5 h-8 bg-gradient-to-t from-pink-400 to-pink-300 rounded-full"
-        />
-      ))}
-    </div>
   );
 }
